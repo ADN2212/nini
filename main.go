@@ -1,7 +1,18 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+)
 
 func main() {
-	fmt.Println("Hello new world ...")
+	argsNum := len(os.Args)
+	switch argsNum {
+	case 2:
+		fmt.Println("Ejecutando script")
+	case 1:
+		fmt.Println("Starting commant promtp")
+	default:
+		fmt.Println("Opcion no definida")
+	}
 }
