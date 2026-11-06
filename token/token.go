@@ -24,8 +24,8 @@ const (
 	Slash             // /
 	Star              // *
 
-	// One or two character tokens.
-	Bang         // !
+	// Logicos
+	Not          // no
 	BangEqual    // !=
 	Equal        // =
 	EqualEqual   // ==
@@ -52,7 +52,7 @@ const (
 	//Return // return
 	//Super  // super
 	//This   // this
-	//True   // true
+	True  // true
 	Var   // var
 	While // while
 	EOF   // end of input (no lexeme)
