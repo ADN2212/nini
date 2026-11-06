@@ -61,6 +61,8 @@ func (lexer *lexer) scanNextToken() {
 	case '!':
 		if lexer.match('=') {
 			lexer.addToken(token.BangEqual, nil)
+		} else {
+			lexer.err = ErrUnexpectedCharacter //el bang solo no es un caracter permitido.
 		}
 	case '=':
 		if lexer.match('=') {

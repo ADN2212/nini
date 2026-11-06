@@ -49,7 +49,7 @@ func run(src string) error {
 		return err
 	}
 	for _, t := range tokens {
-		fmt.Println(t.Lexeme)
+		fmt.Printf("lexema: %v, tipo: %v, valor: %v\n", t.Lexeme, t.Type, t.Literal)
 	}
 	return nil
 }
