@@ -4,15 +4,14 @@ import (
 	"github.com/ADN2212/nini/token"
 )
 
-
-
 type Stmt struct {
-	Type int
+	Type StmtType
+	Name *token.Token//en caso de que sea la declaracion de una variable
+	Expr *Expr
+	Condition *Expr//En caso de que sea un if o un while
+	ThenBranch *Stmt
+	ElseBranch *Stmt
 }
-
-
-
-
 
 type Expr struct {
 	Val any
@@ -21,6 +20,17 @@ type Expr struct {
 	Right *Expr
 	Operator *token.Token
 }
+
+type StmtType int
+
+const (
+	VarStmt = iota + 1
+	ExprStmt
+	PrintStmt
+	IfStmt
+	WhileStmt
+	BlockStmt
+)
 
 type ExprType int
 
