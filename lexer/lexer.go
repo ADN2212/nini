@@ -133,10 +133,6 @@ func (lexer *lexer) scanIdentifier() {
 	lexer.addToken(token.Identifier, nil) //los identificadores si, pero no en esta estapa
 }
 
-func isAlphaNumeric(c rune) bool {
-	return isAlpha(c) || isDigit(c)
-}
-
 // como peek pero ve el que le sigue al siguiente
 func (lexer *lexer) peekNext() rune {
 	next := lexer.current + 1
@@ -174,14 +170,6 @@ func (lexer *lexer) scanNumber() {
 	}
 	//al final agrega un token de tipo num
 	lexer.addToken(token.Number, num)
-}
-
-func isDigit(c rune) bool {
-	return c >= '0' && c <= '9'
-}
-
-func isAlpha(c rune) bool {
-	return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '_'
 }
 
 // esta funcion toma el caracter al que se apunta actualmente
