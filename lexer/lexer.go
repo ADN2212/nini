@@ -113,20 +113,6 @@ func (lexer *lexer) scanNextToken() {
 	}
 }
 
-var keywords map[string]token.TokenType = map[string]token.TokenType{
-	"y":         token.And,
-	"sino":      token.Else,
-	"falso":     token.False,
-	"si":        token.If,
-	"nulo":      token.Nil,
-	"o":         token.Or,
-	"ver":       token.Print,
-	"verdadero": token.True,
-	"variable":  token.Var,
-	"mientras":  token.While,
-	"no":        token.Not,
-}
-
 // Los indentificadores son los tokens que sirven para
 // nombrar variables, ej: num, hola10
 func (lexer *lexer) scanIdentifier() {
