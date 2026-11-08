@@ -33,14 +33,6 @@ func NewUnaryExpr(operator token.Token, rightExpr *Expr) Expr {
 	}
 }
 
-// func NewFactorExpr(operator token.Token, leftExpr *Expr, rightExpr *Expr) Expr {
-// 	return Expr{
-// 		Type:  FactorExpr,
-// 		Left:  leftExpr,
-// 		Right: rightExpr,
-// 	}
-// }
-
 func NewBynaryExpr(
 	operator token.Token,
 	leftExpr *Expr,
@@ -51,6 +43,13 @@ func NewBynaryExpr(
 		Operator: &operator,
 		Left: leftExpr,
 		Right: rightExpr,
+	}
+}
+
+func NewGroupExpr(expr *Expr) Expr {
+	return Expr{
+		Type: GroupExpr,
+		Right: expr,//podria ser cualquiera de los dos laterales
 	}
 }
 
@@ -77,4 +76,5 @@ const (
 	FactorExpr //
 	UnaryExpr
 	PrimaryExpr //estos son los literals
+	GroupExpr
 )

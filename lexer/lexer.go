@@ -24,6 +24,14 @@ func ScanTokens(sourceCode string) ([]token.Token, error) {
 			return []token.Token{}, lexer.err //early return para mantener las cosas simples
 		}
 	}
+
+	lexer.tokens = append(lexer.tokens, token.Token{
+		Type: token.EOF,
+		Lexeme: "",
+		Literal: nil,
+		Line: lexer.line,
+	})
+
 	return lexer.tokens, nil
 }
 

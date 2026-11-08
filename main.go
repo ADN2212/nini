@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/ADN2212/nini/lexer"
 	"os"
+	"github.com/ADN2212/nini/parser"
 )
 
 func main() {
@@ -51,5 +52,16 @@ func run(src string) error {
 	for _, t := range tokens {
 		fmt.Printf("lexema: %v, tipo: %v, valor: %v\n", t.Lexeme, t.Type, t.Literal)
 	}
-	return nil
+
+	stmts, err := parser.Parse(tokens)
+	if err != nil {
+		return err
+	}
+	
+
+	for _, stmt := range stmts {
+		fmt.Println(stmt)
+	}
+
+	return nil	
 }
