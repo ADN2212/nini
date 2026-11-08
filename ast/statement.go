@@ -49,8 +49,12 @@ func NewBynaryExpr(
 func NewGroupExpr(expr *Expr) Expr {
 	return Expr{
 		Type: GroupExpr,
-		Right: expr,//podria ser cualquiera de los dos laterales
+		Right: expr,//podria ser cualquiera de los dos
 	}
+}
+
+func (e *Expr) IsEmpty() bool {
+	return e.Type == 0
 }
 
 type StmtType int

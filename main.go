@@ -4,8 +4,8 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/ADN2212/nini/lexer"
-	"os"
 	"github.com/ADN2212/nini/parser"
+	"os"
 )
 
 func main() {
@@ -57,11 +57,41 @@ func run(src string) error {
 	if err != nil {
 		return err
 	}
-	
 
-	for _, stmt := range stmts {
-		fmt.Println(stmt)
+	expr := stmts[0].Expr
+	
+	//fmt.Println(expr)
+	//fmt.Println(expr.Operator)
+	//fmt.Println(expr.Left.Val)
+	
+	//fmt.Println(expr.Left)
+
+	//calls := 0
+
+	for {
+		fmt.Println(expr.Operator)
+		//fmt.Println(expr == expr.Right)
+		//fmt.Println(expr == expr.Left)
+		expr = expr.Right
+		if expr == nil {
+			//fmt.Println(expr.Operator)
+			fmt.Println("Saliendo")
+			return nil
+		}
+		fmt.Println(expr.Right)
+		//calls++
 	}
 
-	return nil	
+	//fmt.Println(expr.Operator)
+
+	// for _, stmt := range stmts {
+	// 	fmt.Println(stmt.Type)
+	// 	fmt.Println(stmt.Expr.Operator)
+	// 	fmt.Println(stmt.Expr.Left.Left.Left.Left.Left)
+	// 	//fmt.Println(stmt.Expr.Left.Left.Operator)
+	// 	//fmt.Println(stmt.Expr.Left.Right.Val)
+
+	// }
+
+	return nil
 }
