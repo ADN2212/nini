@@ -5,20 +5,53 @@ import (
 )
 
 type Stmt struct {
-	Type StmtType
-	Name *token.Token//en caso de que sea la declaracion de una variable
-	Expr *Expr
-	Condition *Expr//En caso de que sea un if o un while
+	Type       StmtType
+	Name       *token.Token //en caso de que sea la declaracion de una variable
+	Expr       *Expr
+	Condition  *Expr //En caso de que sea un if o un while
 	ThenBranch *Stmt
 	ElseBranch *Stmt
 }
 
+func NewExprStatement(exp *Expr) Stmt {
+	return Stmt{Type: ExprStmt, Expr: exp}
+}
+
 type Expr struct {
-	Val any
-	Type ExprType
-	Left *Expr
-	Right *Expr
+	Val      any
+	Type     ExprType
+	Left     *Expr
+	Right    *Expr
 	Operator *token.Token
+}
+
+func NewUnaryExpr(operator token.Token, rightExpr *Expr) Expr {
+	return Expr{
+		Type:     UnaryExpr,
+		Operator: &operator,
+		Right:    rightExpr,
+	}
+}
+
+// func NewFactorExpr(operator token.Token, leftExpr *Expr, rightExpr *Expr) Expr {
+// 	return Expr{
+// 		Type:  FactorExpr,
+// 		Left:  leftExpr,
+// 		Right: rightExpr,
+// 	}
+// }
+
+func NewBynaryExpr(
+	operator token.Token,
+	leftExpr *Expr,
+	rightExpr *Expr,
+	_type ExprType) Expr {
+	return Expr{
+		Type: _type,
+		Operator: &operator,
+		Left: leftExpr,
+		Right: rightExpr,
+	}
 }
 
 type StmtType int
@@ -34,14 +67,14 @@ const (
 
 type ExprType int
 
-//este orden va de la mas compleja a la mas simple
+// este orden va de la mas compleja a la mas simple
 const (
 	AssingmentExpr = iota + 1
 	LogicalExpr
 	EqualityExpr
 	ComparisonExpr
-	TermExpr
-	FactorExpr
+	TermExpr   //
+	FactorExpr //
 	UnaryExpr
-	PrimaryExpr
+	PrimaryExpr //estos son los literals
 )
