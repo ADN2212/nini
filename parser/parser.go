@@ -29,7 +29,8 @@ func Parse(tokens []token.Token) ([]ast.Stmt, error) {
 	return statements, nil
 }
 
-// este es el top del grammar
+// este es el top del grammar, todo es una declaracion
+//sin embargo desde un punto de vista de implementacion todo es un statement
 func (p *parser) declaration() ast.Stmt {
 	return p.statement()
 }
@@ -102,7 +103,6 @@ func (p *parser) factor() ast.Expr {
 
 func (p *parser) unary() ast.Expr {
 	if p.match(token.Not, token.Minus) {
-		//fmt.Println("Dentro")
 		operator := p.previous()
 		right := p.unary() //esto es lo que determina la asociatividad a la derecha; !!true = !(!true)
 		return ast.NewUnaryExpr(operator, &right)
@@ -132,7 +132,6 @@ func (p *parser) primary() ast.Expr {
 		return expr
 	}
 
-	//al hayar un '(' se empieza a calcular una nueva expression
 	if p.match(token.LeftParen) {
 		innerExpr := p.expression()
 		expr = ast.NewGroupExpr(&innerExpr)
