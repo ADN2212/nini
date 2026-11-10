@@ -50,9 +50,11 @@ func run(src string) error {
 	if err != nil {
 		return err
 	}
+
 	// for _, t := range tokens {
 	// 	fmt.Printf("lexema: %v, tipo: %v, valor: %v\n", t.Lexeme, t.Type, t.Literal)
 	// }
+
 	stmts, err := parser.Parse(tokens)
 	if err != nil {
 		return err
@@ -61,7 +63,10 @@ func run(src string) error {
 	if err != nil {
 		return err
 	}
-	
-	fmt.Println(res)
+
+	if res != nil {
+		fmt.Println(res)
+	}
+
 	return nil
 }

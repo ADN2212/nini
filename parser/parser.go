@@ -8,7 +8,6 @@ import (
 
 var UnknowPrymaryTypeErr = errors.New("Tipo primario desconocido")
 
-
 type parser struct {
 	tokens  []token.Token
 	current int //este es el indice del token actual
@@ -30,14 +29,22 @@ func Parse(tokens []token.Token) ([]ast.Stmt, error) {
 }
 
 // este es el top del grammar, todo es una declaracion
-//sin embargo desde un punto de vista de implementacion todo es un statement
+// sin embargo desde un punto de vista de implementacion todo es un statement
 func (p *parser) declaration() ast.Stmt {
 	return p.statement()
 }
 
 func (p *parser) statement() ast.Stmt {
+
+	if p.match(token.Print) {
+		expr := p.expression()
+		p.consume(token.Semicolon, "Se espera ';' despues del valor")
+		return ast.NewPrintStmt(&expr)
+	}
+
 	expr := p.expression()
-	stmt := ast.NewExprStatement(&expr)
+	stmt := ast.NewExprStmt(&expr)
+	p.consume(token.Semicolon, "Se espera ';' despues dela expresion")
 	return stmt
 }
 

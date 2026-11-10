@@ -2,6 +2,8 @@ package interpreter
 
 import (
 	"errors"
+	"fmt"
+
 	"github.com/ADN2212/nini/ast"
 	"github.com/ADN2212/nini/token"
 )
@@ -28,7 +30,10 @@ func Interpret(stmts []ast.Stmt) (any, error) {
 		case ast.VarStmt:
 			return nil, NotImplementedErr
 		case ast.PrintStmt:
-			return nil, NotImplementedErr
+			err := printExpr(stmt.Expr)
+			if err != nil {
+				return nil, err
+			}
 		case ast.IfStmt:
 			return nil, NotImplementedErr
 		case ast.WhileStmt:
@@ -37,16 +42,32 @@ func Interpret(stmts []ast.Stmt) (any, error) {
 			return nil, NotImplementedErr
 		case ast.ExprStmt:
 			val, err := computeExpr(stmt.Expr)
-			v, ok := goToNiniRprMap[val]
-			if !ok {
-				return val, nil
+			if err != nil {
+				return nil, err
 			}
-			return v, err
+			v, ok := goToNiniRprMap[val]
+			if ok {
+				val = v
+			}
+			fmt.Printf("expresion ejecutada => %v \n", val)
 		default:
 			return nil, UnknownStmtTypeErr
 		}
 	}
 	return nil, nil
+}
+
+func printExpr(expr *ast.Expr) error {
+	val, err := computeExpr(expr)
+	if err != nil {
+		return err
+	}
+	v, ok := goToNiniRprMap[val]
+	if ok {
+		val = v
+	}
+	fmt.Printf("mira => %v \n", val)
+	return nil
 }
 
 func computeExpr(expr *ast.Expr) (any, error) {

@@ -13,8 +13,12 @@ type Stmt struct {
 	ElseBranch *Stmt
 }
 
-func NewExprStatement(exp *Expr) Stmt {
-	return Stmt{Type: ExprStmt, Expr: exp}
+func NewExprStmt(expr *Expr) Stmt {
+	return Stmt{Type: ExprStmt, Expr: expr}
+}
+
+func NewPrintStmt(expr *Expr) Stmt {
+	return Stmt{Type: PrintStmt, Expr: expr}
 }
 
 type Expr struct {
@@ -75,11 +79,11 @@ type ExprType int
 const (
 	AssingmentExpr = iota + 1
 	LogicalExpr
-	EqualityExpr//
-	ComparisonExpr//
-	TermExpr   //
-	FactorExpr //
-	UnaryExpr//
-	PrimaryExpr //estos son los literals
-	GroupExpr//
+	EqualityExpr   //
+	ComparisonExpr //
+	TermExpr       //
+	FactorExpr     //
+	UnaryExpr      //
+	PrimaryExpr    //estos son los literals
+	GroupExpr      //
 )
