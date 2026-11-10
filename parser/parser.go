@@ -2,9 +2,6 @@ package parser
 
 import (
 	"errors"
-	"fmt"
-	//"fmt"
-
 	"github.com/ADN2212/nini/ast"
 	"github.com/ADN2212/nini/token"
 )
@@ -50,7 +47,7 @@ func (p *parser) expression() ast.Expr {
 
 func (p *parser) equality() ast.Expr {
 	expr := p.comparison()
-	newExpr := ast.Expr{}//this is a sort of hacking, I am mission the "why" here.
+	newExpr := ast.Expr{} //this is a sort of hacking, I am mission the "why" here.
 	for p.match(token.BangEqual, token.EqualEqual) {
 		operator := p.previous()
 		r := p.comparison()
@@ -96,13 +93,13 @@ func (p *parser) term() ast.Expr {
 
 func (p *parser) factor() ast.Expr {
 	//fmt.Println("In factor")
-	expr := p.unary()		
+	expr := p.unary()
 	newExpr := ast.Expr{}
 	for p.match(token.Slash, token.Star) {
 		operator := p.previous()
 		right := p.unary()
 		newExpr = ast.NewBynaryExpr(operator, &expr, &right, ast.FactorExpr)
-		fmt.Println(newExpr == *newExpr.Left)
+		//fmt.Println(newExpr == *newExpr.Left)
 	}
 	if newExpr.IsEmpty() {
 		return expr
@@ -145,14 +142,14 @@ func (p *parser) primary() ast.Expr {
 
 	if p.match(token.Number, token.String) {
 		//fmt.Println("Number or string")
-		expr.Val = p.previous()
+		expr.Val = p.previous().Literal
 		return expr
 	}
 
 	//al hayar un '(' se empieza a calcular una nueva expression
 	if p.match(token.LeftParen) {
 		innerExpr := p.expression()
-		expr = ast.NewGroupExpr(&innerExpr) 
+		expr = ast.NewGroupExpr(&innerExpr)
 		p.consume(token.RightParen, "se esepra ')' al final de la exprecion grupal")
 		return expr
 	}

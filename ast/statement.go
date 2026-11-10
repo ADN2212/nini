@@ -75,11 +75,11 @@ type ExprType int
 const (
 	AssingmentExpr = iota + 1
 	LogicalExpr
-	EqualityExpr
-	ComparisonExpr
+	EqualityExpr//
+	ComparisonExpr//
 	TermExpr   //
 	FactorExpr //
-	UnaryExpr
+	UnaryExpr//
 	PrimaryExpr //estos son los literals
-	GroupExpr
+	GroupExpr//
 )

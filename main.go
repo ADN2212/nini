@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/ADN2212/nini/interpreter"
 	"github.com/ADN2212/nini/lexer"
 	"github.com/ADN2212/nini/parser"
 	"os"
@@ -49,49 +50,18 @@ func run(src string) error {
 	if err != nil {
 		return err
 	}
-	for _, t := range tokens {
-		fmt.Printf("lexema: %v, tipo: %v, valor: %v\n", t.Lexeme, t.Type, t.Literal)
-	}
-
+	// for _, t := range tokens {
+	// 	fmt.Printf("lexema: %v, tipo: %v, valor: %v\n", t.Lexeme, t.Type, t.Literal)
+	// }
 	stmts, err := parser.Parse(tokens)
 	if err != nil {
 		return err
 	}
-
-	expr := stmts[0].Expr
-	
-	//fmt.Println(expr)
-	//fmt.Println(expr.Operator)
-	//fmt.Println(expr.Left.Val)
-	
-	//fmt.Println(expr.Left)
-
-	//calls := 0
-
-	for {
-		fmt.Println(expr.Operator)
-		//fmt.Println(expr == expr.Right)
-		//fmt.Println(expr == expr.Left)
-		expr = expr.Right
-		if expr == nil {
-			//fmt.Println(expr.Operator)
-			fmt.Println("Saliendo")
-			return nil
-		}
-		fmt.Println(expr.Right)
-		//calls++
+	res, err := interpreter.Interpret(stmts)
+	if err != nil {
+		return err
 	}
-
-	//fmt.Println(expr.Operator)
-
-	// for _, stmt := range stmts {
-	// 	fmt.Println(stmt.Type)
-	// 	fmt.Println(stmt.Expr.Operator)
-	// 	fmt.Println(stmt.Expr.Left.Left.Left.Left.Left)
-	// 	//fmt.Println(stmt.Expr.Left.Left.Operator)
-	// 	//fmt.Println(stmt.Expr.Left.Right.Val)
-
-	// }
-
+	
+	fmt.Println(res)
 	return nil
 }
