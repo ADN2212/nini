@@ -25,6 +25,11 @@ type Expr struct {
 	Operator *token.Token
 }
 
+// Comprueba que una expression inicializda este vacia, es decir que no tenga valores asignados a ninguno de los campos.
+func (e *Expr) IsEmpty() bool {
+	return e.Val == nil && e.Type == 0 && e.Left == nil && e.Right == nil && e.Operator == nil
+}
+
 func NewUnaryExpr(operator token.Token, rightExpr *Expr) Expr {
 	return Expr{
 		Type:     UnaryExpr,
@@ -39,22 +44,18 @@ func NewBynaryExpr(
 	rightExpr *Expr,
 	_type ExprType) Expr {
 	return Expr{
-		Type: _type,
+		Type:     _type,
 		Operator: &operator,
-		Left: leftExpr,
-		Right: rightExpr,
+		Left:     leftExpr,
+		Right:    rightExpr,
 	}
 }
 
 func NewGroupExpr(expr *Expr) Expr {
 	return Expr{
-		Type: GroupExpr,
-		Right: expr,//podria ser cualquiera de los dos
+		Type:  GroupExpr,
+		Right: expr, //podria ser cualquiera de los dos
 	}
-}
-
-func (e *Expr) IsEmpty() bool {
-	return e.Type == 0
 }
 
 type StmtType int

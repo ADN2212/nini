@@ -107,7 +107,7 @@ func (p *parser) factor() ast.Expr {
 	if newExpr.IsEmpty() {
 		return expr
 	}
-	return expr
+	return newExpr
 }
 
 func (p *parser) unary() ast.Expr {
@@ -143,15 +143,12 @@ func (p *parser) primary() ast.Expr {
 		return expr
 	}
 
-	//fmt.Println("Before")
 	if p.match(token.Number, token.String) {
 		//fmt.Println("Number or string")
-		//fmt.Println(p.current)
 		expr.Val = p.previous()
 		return expr
 	}
 
-	//fmt.Println("llega aqui ???")
 	//al hayar un '(' se empieza a calcular una nueva expression
 	if p.match(token.LeftParen) {
 		innerExpr := p.expression()
@@ -175,7 +172,6 @@ func (p *parser) consume(t token.TokenType, message string) token.Token {
 func (p *parser) match(types ...token.TokenType) bool {
 	//fmt.Println("mathc")
 	for _, tokenType := range types {
-		//fmt.Println(i)
 		if p.check(tokenType) {
 			p.advance()
 			return true
