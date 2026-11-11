@@ -21,6 +21,10 @@ func NewPrintStmt(expr *Expr) Stmt {
 	return Stmt{Type: PrintStmt, Expr: expr}
 }
 
+func NewVarStm(name token.Token, expr *Expr) Stmt {
+	return Stmt{Name: &name, Expr: expr}
+}
+
 type Expr struct {
 	Val      any
 	Type     ExprType

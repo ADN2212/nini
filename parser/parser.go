@@ -31,7 +31,23 @@ func Parse(tokens []token.Token) ([]ast.Stmt, error) {
 // este es el top del grammar, todo es una declaracion
 // sin embargo desde un punto de vista de implementacion todo es un statement
 func (p *parser) declaration() ast.Stmt {
+	if p.match(token.Var) {
+		return p.varDeclaration()
+	}
 	return p.statement()
+}
+
+func (p *parser) varDeclaration() ast.Stmt {
+	name := p.consume(token.Identifier, "se espera nombre de vairable")
+
+	var initializer ast.Expr
+	if p.match(token.Equal) {
+		initializer = p.expression()
+	}
+
+	p.consume(token.Semicolon, "se espera ';' despues de una declaracion de variable")
+	return ast.NewVarStm(name, &initializer)
+
 }
 
 func (p *parser) statement() ast.Stmt {
@@ -136,6 +152,11 @@ func (p *parser) primary() ast.Expr {
 
 	if p.match(token.Number, token.String) {
 		expr.Val = p.previous().Literal
+		return expr
+	}
+
+	if p.match(token.Identifier) {
+		expr.Val = p.previous()
 		return expr
 	}
 
