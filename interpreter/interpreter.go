@@ -96,22 +96,14 @@ func computeExpr(expr *ast.Expr) (any, error) {
 	//Estas 4 caen dentro de la cantegoria de operaciones binarias
 	case ast.LogicalExpr:
 		return nil, NotImplementedErr
-	case ast.EqualityExpr:
-		return computeBynary(expr)
-	case ast.ComparisonExpr:
-		return computeBynary(expr)
-	case ast.TermExpr:
-		return computeBynary(expr)
-	case ast.FactorExpr:
-		return computeBynary(expr)
-	//--------------------------------------------------------------
+	case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr:
+		return computeBynaryExpr(expr)
 	case ast.UnaryExpr:
-		return computeUnary(expr)
+		return computeUnaryExpr(expr)
 	case ast.PrimaryExpr:
 		return expr.Val, nil
 	case ast.GroupExpr:
-		return computeExpr(expr.Right)
-
+		return computeExpr(expr.Right) 
 	case ast.VarExpr:
 		return computeVarExpr(expr)
 	default:
@@ -123,7 +115,7 @@ func computeVarExpr(expr *ast.Expr) (any, error) {
 	return env.Get(*expr.Name)
 }
 
-func computeUnary(expr *ast.Expr) (any, error) {
+func computeUnaryExpr(expr *ast.Expr) (any, error) {
 	r, err := computeExpr(expr.Right)
 	if err != nil {
 		return nil, err
@@ -142,7 +134,7 @@ func computeUnary(expr *ast.Expr) (any, error) {
 	}
 }
 
-func computeBynary(expr *ast.Expr) (any, error) {
+func computeBynaryExpr(expr *ast.Expr) (any, error) {
 
 	l, err := computeExpr(expr.Left)
 	if err != nil {
