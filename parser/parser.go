@@ -46,7 +46,7 @@ func (p *parser) varDeclaration() ast.Stmt {
 	}
 
 	p.consume(token.Semicolon, "se espera ';' despues de una declaracion de variable")
-	return ast.NewVarStm(name, &initializer)
+	return ast.NewVarDeclarationStm(name, &initializer)
 
 }
 
@@ -156,8 +156,8 @@ func (p *parser) primary() ast.Expr {
 	}
 
 	if p.match(token.Identifier) {
-		expr.Val = p.previous()
-		return expr
+		prev := p.previous()
+		return ast.NewVarExpr(&prev)
 	}
 
 	if p.match(token.LeftParen) {

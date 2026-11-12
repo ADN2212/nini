@@ -2,7 +2,6 @@ package enviroment
 
 import (
 	"errors"
-
 	"github.com/ADN2212/nini/token"
 )
 

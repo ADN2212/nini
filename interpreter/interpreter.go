@@ -3,7 +3,6 @@ package interpreter
 import (
 	"errors"
 	"fmt"
-
 	"github.com/ADN2212/nini/ast"
 	"github.com/ADN2212/nini/enviroment"
 	"github.com/ADN2212/nini/token"
@@ -109,9 +108,16 @@ func computeExpr(expr *ast.Expr) (any, error) {
 		return expr.Val, nil
 	case ast.GroupExpr:
 		return computeExpr(expr.Right)
+
+	case ast.VarExpr:
+		return computeVarExpr(expr)
 	default:
 		return nil, UnknowExprTypeErr
 	}
+}
+
+func computeVarExpr(expr *ast.Expr) (any, error) {
+	return env.Get(*expr.Name)
 }
 
 func computeUnary(expr *ast.Expr) (any, error) {

@@ -21,11 +21,16 @@ func NewPrintStmt(expr *Expr) Stmt {
 	return Stmt{Type: PrintStmt, Expr: expr}
 }
 
-func NewVarStm(name token.Token, expr *Expr) Stmt {
+func NewVarDeclarationStm(name token.Token, expr *Expr) Stmt {
 	return Stmt{Name: &name, Expr: expr, Type: VarDeclarationStmt}
 }
 
+// func NewVarStm(name token.Token, expr *Expr) Stmt {
+// 	return Stmt{Name: &name, Expr: expr, Type: VarStmt}
+// }
+
 type Expr struct {
+	Name     *token.Token
 	Val      any
 	Type     ExprType
 	Left     *Expr
@@ -66,10 +71,18 @@ func NewGroupExpr(expr *Expr) Expr {
 	}
 }
 
+func NewVarExpr(name *token.Token) Expr {
+	return Expr{
+		Type: VarExpr,
+		Name: name,
+	}
+}
+
 type StmtType int
 
 const (
 	VarDeclarationStmt = iota + 1
+	VarStmt
 	ExprStmt
 	PrintStmt
 	IfStmt
@@ -80,6 +93,7 @@ const (
 type ExprType int
 
 // este orden va de la mas compleja a la mas simple
+// importa el orden ???
 const (
 	AssingmentExpr = iota + 1
 	LogicalExpr
@@ -90,4 +104,5 @@ const (
 	UnaryExpr      //
 	PrimaryExpr    //estos son los literals
 	GroupExpr      //
+	VarExpr
 )
