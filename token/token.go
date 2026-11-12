@@ -12,17 +12,17 @@ type TokenType int
 
 const (
 	// Single-character tokens.
-	LeftParen  = iota // (
-	RightParen        // )
-	LeftBrace         // {
-	RightBrace        // }
-	Comma             // ,
-	Dot               // .
-	Minus             // -
-	Plus              // +
-	Semicolon         // ;
-	Slash             // /
-	Star              // *
+	LeftParen  = iota + 1 // (
+	RightParen            // )
+	LeftBrace             // {
+	RightBrace            // }
+	Comma                 // ,
+	Dot                   // .
+	Minus                 // -
+	Plus                  // +
+	Semicolon             // ;
+	Slash                 // /
+	Star                  // *
 
 	// Logicos
 	Not          // no
