@@ -63,7 +63,24 @@ func (p *parser) statement() ast.Stmt {
 }
 
 func (p *parser) expression() ast.Expr {
-	return p.equality()
+	return p.assignment()
+}
+
+// mejora este mensaje
+var InvalidAssingmentTargetErr error = errors.New("No se puede asignar esto")
+
+func (p *parser) assignment() ast.Expr {
+	expr := p.equality()
+	if p.match(token.Equal) {
+		//esta llamanda recursiva sirve para calcular la expresiones que deben hacece antes de assinar el valor a la variable.
+		exprTuAssing := p.assignment()
+		if expr.Type == ast.VarExpr {
+			name := expr.Name
+			return ast.NewVarAssingmentExpr(name, &exprTuAssing)
+		}
+		p.err = InvalidAssingmentTargetErr
+	}
+	return expr
 }
 
 func (p *parser) equality() ast.Expr {

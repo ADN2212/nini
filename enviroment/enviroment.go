@@ -1,6 +1,8 @@
 package enviroment
 
 import (
+	"fmt"
+
 	"github.com/ADN2212/nini/token"
 )
 
@@ -28,4 +30,15 @@ func (env *Env) Get(name token.Token) (any, error) {
 		return nil, UndefinedVarError
 	}
 	return val, nil
+}
+
+func (env *Env) Assing(name token.Token, value any) error {
+	_, ok := env.values[name.Lexeme]
+	//si no se hiciera esto el nini tendria declaracion de variables implicita
+	if !ok {
+		return UndefinedVarError
+	}
+	env.values[name.Lexeme] = value
+	fmt.Printf("la variable '%v' ha sido reasignada al valor '%v' \n", name.Lexeme, value)
+	return nil
 }

@@ -78,6 +78,14 @@ func NewVarExpr(name *token.Token) Expr {
 	}
 }
 
+func NewVarAssingmentExpr(name *token.Token, rightExp *Expr) Expr {
+	return Expr{
+		Name:  name,
+		Type:  VarAssingmentExpr,
+		Right: rightExp,
+	}
+}
+
 type StmtType int
 
 const (
@@ -95,7 +103,7 @@ type ExprType int
 // este orden va de la mas compleja a la mas simple
 // importa el orden ???
 const (
-	AssingmentExpr = iota + 1
+	VarAssingmentExpr = iota + 1
 	LogicalExpr
 	EqualityExpr   //
 	ComparisonExpr //

@@ -81,8 +81,8 @@ func printExpr(expr *ast.Expr) error {
 
 func computeExpr(expr *ast.Expr) (any, error) {
 	switch expr.Type {
-	case ast.AssingmentExpr:
-		return nil, NotImplementedErr
+	case ast.VarAssingmentExpr:
+		return computeVarAssingExpr(expr)
 	//Estas 4 caen dentro de la cantegoria de operaciones binarias
 	case ast.LogicalExpr:
 		return nil, NotImplementedErr
@@ -93,12 +93,20 @@ func computeExpr(expr *ast.Expr) (any, error) {
 	case ast.PrimaryExpr:
 		return expr.Val, nil
 	case ast.GroupExpr:
-		return computeExpr(expr.Right) 
+		return computeExpr(expr.Right)
 	case ast.VarExpr:
 		return computeVarExpr(expr)
 	default:
 		return nil, UnknowExprTypeErr
 	}
+}
+
+func computeVarAssingExpr(expr *ast.Expr) (any, error) {
+	val, err := computeExpr(expr.Right) //primero hay que calcular el valor de la expresion que esta a la derecha
+	if err != nil {
+		return nil, err
+	}
+	return nil, env.Assing(*expr.Name, val)
 }
 
 func computeVarExpr(expr *ast.Expr) (any, error) {
