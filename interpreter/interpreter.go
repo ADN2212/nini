@@ -5,8 +5,12 @@ import (
 	"fmt"
 
 	"github.com/ADN2212/nini/ast"
+	"github.com/ADN2212/nini/enviroment"
 	"github.com/ADN2212/nini/token"
 )
+
+// is this the right place ???
+var env enviroment.Env = enviroment.NewEnv()
 
 // esto es para fines de representacion, osea, lo que el user del lenguage ve.
 var goToNiniRprMap map[any]string = map[any]string{
@@ -27,8 +31,11 @@ func Interpret(stmts []ast.Stmt) (any, error) {
 	for _, stmt := range stmts {
 		switch stmt.Type {
 		//el ordern importa aqui ???
-		case ast.VarStmt:
-			return nil, NotImplementedErr
+		case ast.VarDeclarationStmt:
+			err := declareVar(stmt)
+			if err != nil {
+				return nil, err
+			}
 		case ast.PrintStmt:
 			err := printExpr(stmt.Expr)
 			if err != nil {
@@ -55,6 +62,16 @@ func Interpret(stmts []ast.Stmt) (any, error) {
 		}
 	}
 	return nil, nil
+}
+
+func declareVar(stmt ast.Stmt) error {
+	val, err := computeExpr(stmt.Expr)
+	if err != nil {
+		return err
+	}
+	env.Define(stmt.Name.Lexeme, val)
+	fmt.Printf("variable '%v' declarada con valor '%v' \n", stmt.Name.Lexeme, val)
+	return nil
 }
 
 func printExpr(expr *ast.Expr) error {

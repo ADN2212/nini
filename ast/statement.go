@@ -22,7 +22,7 @@ func NewPrintStmt(expr *Expr) Stmt {
 }
 
 func NewVarStm(name token.Token, expr *Expr) Stmt {
-	return Stmt{Name: &name, Expr: expr}
+	return Stmt{Name: &name, Expr: expr, Type: VarDeclarationStmt}
 }
 
 type Expr struct {
@@ -69,7 +69,7 @@ func NewGroupExpr(expr *Expr) Expr {
 type StmtType int
 
 const (
-	VarStmt = iota + 1
+	VarDeclarationStmt = iota + 1
 	ExprStmt
 	PrintStmt
 	IfStmt
