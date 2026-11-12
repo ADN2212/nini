@@ -1,7 +1,6 @@
 package interpreter
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ADN2212/nini/ast"
 	"github.com/ADN2212/nini/enviroment"
@@ -16,15 +15,6 @@ var goToNiniRprMap map[any]string = map[any]string{
 	false: "falso",
 	true:  "verdadero",
 }
-
-// mover esto a un file a parte
-var NotImplementedErr error = errors.New("Esta vaina no ha sido implementada")
-var UnknownStmtTypeErr error = errors.New("Tipo de statement desconocido")
-var UnknowExprTypeErr error = errors.New("Tipo de expression desconocido")
-var ShouldBeNumberErr error = errors.New("Esto deberia ser un numero")
-var UnknowUnaryOperator error = errors.New("Operador unario desconocido")
-var UnknowBynaryOperator error = errors.New("Operador binario desconocido")
-var UnknowBynaryOperation error = errors.New("Operacion binaria desconocida")
 
 func Interpret(stmts []ast.Stmt) (any, error) {
 	for _, stmt := range stmts {

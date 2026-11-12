@@ -1,7 +1,6 @@
 package enviroment
 
 import (
-	"errors"
 	"github.com/ADN2212/nini/token"
 )
 
@@ -13,12 +12,6 @@ type Env struct {
 func NewEnv() Env {
 	return Env{values: map[string]any{}}
 }
-
-// Estos errores sucenden en el interpreter, so they are runtime errors
-var AlreadyDefinedVar error = errors.New("Esta variable ya ha sido declarada")
-
-// esto es un runtime error
-var UndefinedVarError error = errors.New("Variable no definida")
 
 func (env *Env) Define(name string, value any) error {
 	_, ok := env.values[name]

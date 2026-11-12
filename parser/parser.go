@@ -6,8 +6,6 @@ import (
 	"github.com/ADN2212/nini/token"
 )
 
-var UnknowPrymaryTypeErr = errors.New("Tipo primario desconocido")
-
 type parser struct {
 	tokens  []token.Token
 	current int //este es el indice del token actual
