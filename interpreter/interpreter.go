@@ -68,7 +68,10 @@ func declareVar(stmt ast.Stmt) error {
 	if err != nil {
 		return err
 	}
-	env.Define(stmt.Name.Lexeme, val)
+	err = env.Define(stmt.Name.Lexeme, val)
+	if err != nil {
+		return err
+	}
 	fmt.Printf("variable '%v' declarada con valor '%v' \n", stmt.Name.Lexeme, val)
 	return nil
 }

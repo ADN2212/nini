@@ -14,18 +14,20 @@ func NewEnv() Env {
 	return Env{values: map[string]any{}}
 }
 
-// por la forma en la que esto esta escrito
-// se puede hacer lo siguiente
-// var x = 10;
-// var x = 25;
-// es decir, redeclarar variables
-// eso puede ser una decicion de disenio, o se puede agragar un constrain
-func (env *Env) Define(name string, value any) {
-	env.values[name] = value
-}
+// Estos errores sucenden en el interpreter, so they are runtime errors
+var AlreadyDefinedVar error = errors.New("Esta variable ya ha sido declarada")
 
 // esto es un runtime error
 var UndefinedVarError error = errors.New("Variable no definida")
+
+func (env *Env) Define(name string, value any) error {
+	_, ok := env.values[name]
+	if ok {
+		return AlreadyDefinedVar
+	}
+	env.values[name] = value
+	return nil
+}
 
 func (env *Env) Get(name token.Token) (any, error) {
 	val, ok := env.values[name.Lexeme]
