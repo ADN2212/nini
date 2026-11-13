@@ -134,12 +134,16 @@ func printExpr(expr *ast.Expr) error {
 }
 
 func computeExpr(expr *ast.Expr) (any, error) {
+	if expr == nil {
+		return nil, nil
+	}
 	switch expr.Type {
 	case ast.VarAssingmentExpr:
 		return computeVarAssingExpr(expr)
 	//Estas 4 caen dentro de la cantegoria de operaciones binarias
 	case ast.LogicalExpr:
-		return nil, NotImplementedErr
+		//return nil, NotImplementedErr
+		return computeLogicalExpr(*expr)
 	case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr:
 		return computeBynaryExpr(expr)
 	case ast.UnaryExpr:
@@ -153,6 +157,45 @@ func computeExpr(expr *ast.Expr) (any, error) {
 	default:
 		return nil, UnknowExprTypeErr
 	}
+}
+
+func computeLogicalExpr(expr ast.Expr) (any, error) {
+
+	l, err := computeExpr(expr.Left)
+	if err != nil {
+		return nil, err
+	}
+
+	r, err := computeExpr(expr.Right)
+	if err != nil {
+		return nil, err
+	}
+
+	fmt.Println(l)
+	fmt.Println(r)
+
+	if expr.Operator.Type == token.Or {
+		return isTruthy(l) || isTruthy(r), nil
+	}
+
+	return isTruthy(l) && isTruthy(r), nil
+	// //Esto tiene algo que ver con short circuiting, pero no lo entiendo del todo
+	// if expr.Operator.Type == token.Or {
+	// 	if isTruthy(left) {
+	// 		return left, nil
+	// 	}
+	// } else {
+	// 	if !isTruthy(left) {
+	// 		return left, nil
+	// 	}
+	// }
+
+	// // if expr.Right != nil {
+	// // 	return computeExpr(expr.Right)
+	// // }
+	// //return expr.Val, nil
+	// return computeExpr(expr.Right)
+
 }
 
 func computeVarAssingExpr(expr *ast.Expr) (any, error) {

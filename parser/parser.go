@@ -104,7 +104,7 @@ func (p *parser) expression() ast.Expr {
 var InvalidAssingmentTargetErr error = errors.New("No se puede asignar esto")
 
 func (p *parser) assignment() ast.Expr {
-	expr := p.equality()
+	expr := p.or()
 	if p.match(token.Equal) {
 		//esta llamanda recursiva sirve para calcular la expresiones que deben hacece antes de assinar el valor a la variable.
 		exprTuAssing := p.assignment()
@@ -115,6 +115,34 @@ func (p *parser) assignment() ast.Expr {
 		p.err = InvalidAssingmentTargetErr
 	}
 	return expr
+}
+
+func (p *parser) or() ast.Expr {
+	expr := p.and()
+	newExpr := ast.Expr{}
+	for p.match(token.Or) {
+		operator := p.previous()
+		right := p.equality()
+		newExpr = ast.NewBynaryExpr(operator, expr.Left, &right, ast.LogicalExpr)
+	}
+	if newExpr.IsEmpty() {
+		return expr
+	}
+	return newExpr
+}
+
+func (p *parser) and() ast.Expr {
+	expr := p.equality()
+	newExpr := ast.Expr{}
+	for p.match(token.And) {
+		operator := p.previous()
+		right := p.equality()
+		newExpr = ast.NewBynaryExpr(operator, expr.Left, &right, ast.LogicalExpr)
+	}
+	if newExpr.IsEmpty() {
+		return expr
+	}
+	return newExpr
 }
 
 func (p *parser) equality() ast.Expr {
