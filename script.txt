@@ -1,1 +1,16 @@
-Foooo baaaarrrr
+sea a = "hola"; 
+sea b = "adios";
+{
+    sea a = "holaX";
+    sea b = "adioX";
+    {
+        sea a = "hola marola";
+        sea b = "adios marola";
+        ver a;
+        ver b;
+    }
+    ver a;
+    ver b;
+}
+ver a;
+ver b;

@@ -14,11 +14,24 @@ func main() {
 	switch argsNum {
 	case 2:
 		fmt.Println("Ejecutando script")
+		runFile(os.Args[1])
 	case 1:
 		fmt.Println("Starting commant promtp")
 		runPrompt()
 	default:
 		fmt.Println("Opcion no definida")
+	}
+}
+
+func runFile(path string) {
+	bytes, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Println(err.Error())
+		os.Exit(64)
+	}
+	err = run(string(bytes))
+	if err != nil {
+		os.Exit(64)
 	}
 }
 
@@ -50,11 +63,9 @@ func run(src string) error {
 	if err != nil {
 		return err
 	}
-
 	// for _, t := range tokens {
 	// 	fmt.Printf("lexema: %v, tipo: %v, valor: %v\n", t.Lexeme, t.Type, t.Literal)
 	// }
-
 	stmts, err := parser.Parse(tokens)
 	if err != nil {
 		return err
@@ -63,10 +74,8 @@ func run(src string) error {
 	if err != nil {
 		return err
 	}
-
 	if res != nil {
 		fmt.Println(res)
 	}
-
 	return nil
 }

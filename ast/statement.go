@@ -4,6 +4,18 @@ import (
 	"github.com/ADN2212/nini/token"
 )
 
+type StmtType int
+
+const (
+	VarDeclarationStmt = iota + 1
+	VarStmt
+	ExprStmt
+	PrintStmt
+	IfStmt
+	WhileStmt
+	BlockStmt
+)
+
 type Stmt struct {
 	Type       StmtType
 	Name       *token.Token //en caso de que sea la declaracion de una variable
@@ -11,6 +23,14 @@ type Stmt struct {
 	Condition  *Expr //En caso de que sea un if o un while
 	ThenBranch *Stmt
 	ElseBranch *Stmt
+	Statements []Stmt
+}
+
+func NewBlockStmt(statements []Stmt) Stmt {
+	return Stmt{
+		Type:       BlockStmt,
+		Statements: statements,
+	}
 }
 
 func NewExprStmt(expr *Expr) Stmt {
@@ -85,18 +105,6 @@ func NewVarAssingmentExpr(name *token.Token, rightExp *Expr) Expr {
 		Right: rightExp,
 	}
 }
-
-type StmtType int
-
-const (
-	VarDeclarationStmt = iota + 1
-	VarStmt
-	ExprStmt
-	PrintStmt
-	IfStmt
-	WhileStmt
-	BlockStmt
-)
 
 type ExprType int
 

@@ -56,10 +56,25 @@ func (p *parser) statement() ast.Stmt {
 		return ast.NewPrintStmt(&expr)
 	}
 
+	if p.match(token.LeftBrace) {
+		return ast.NewBlockStmt(p.block())
+	}
+
 	expr := p.expression()
 	stmt := ast.NewExprStmt(&expr)
 	p.consume(token.Semicolon, "Se espera ';' despues dela expresion")
 	return stmt
+}
+
+// un block statement no es mas que una sub lista de estatements
+func (p *parser) block() []ast.Stmt {
+	stmts := []ast.Stmt{}
+	//mientras no aparezca un right brace y no estemos al final del file
+	for !p.check(token.RightBrace) && !p.isAtEnd() {
+		stmts = append(stmts, p.declaration())
+	}
+	p.consume(token.RightBrace, "se espera '}' al final del bloque.")
+	return stmts
 }
 
 func (p *parser) expression() ast.Expr {

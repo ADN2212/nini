@@ -7,9 +7,6 @@ import (
 	"github.com/ADN2212/nini/token"
 )
 
-// is this the right place ???
-var env enviroment.Env = enviroment.NewEnv()
-
 // esto es para fines de representacion, osea, lo que el user del lenguage ve.
 var goToNiniRprMap map[any]string = map[any]string{
 	false: "falso",
@@ -35,7 +32,12 @@ func Interpret(stmts []ast.Stmt) (any, error) {
 		case ast.WhileStmt:
 			return nil, NotImplementedErr
 		case ast.BlockStmt:
-			return nil, NotImplementedErr
+			//return nil, NotImplementedErr
+			newEnv := enviroment.NewEnv(&currentEnv)
+			_, err := computeBLockStmt(stmt, &newEnv)
+			if err != nil {
+				return nil, err
+			}
 		case ast.ExprStmt:
 			val, err := computeExpr(stmt.Expr)
 			if err != nil {
@@ -53,12 +55,31 @@ func Interpret(stmts []ast.Stmt) (any, error) {
 	return nil, nil
 }
 
+// is this the right place ???
+// el scope global no tiene parent, de ahi el nil
+var currentEnv enviroment.Env = enviroment.NewEnv(nil)
+
+//var prevEnv enviroment.Env = enviroment.NewEnv(nil)
+
+func computeBLockStmt(stmt ast.Stmt, env *enviroment.Env) (any, error) {
+	prevNev := currentEnv
+	//hago que el env actual sea el que pasa por el argumento
+	currentEnv = *env
+	val, err := Interpret(stmt.Statements)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	//despues de ejecutar el bloque vuelvo a asignar el env a su padre
+	currentEnv = prevNev
+	return val, err
+}
+
 func declareVar(stmt ast.Stmt) error {
 	val, err := computeExpr(stmt.Expr)
 	if err != nil {
 		return err
 	}
-	err = env.Define(stmt.Name.Lexeme, val)
+	err = currentEnv.Define(stmt.Name.Lexeme, val)
 	if err != nil {
 		return err
 	}
@@ -110,11 +131,11 @@ func computeVarAssingExpr(expr *ast.Expr) (any, error) {
 	//el que esto se haga o no va a depender del paradigma dominante del lenguage
 	//por ejemplo los lenguajes funcionales no tienen funciones que no retornen nada
 	//en Scala las funciones "vacias" retornan Unit
-	return val, env.Assing(*expr.Name, val)
+	return val, currentEnv.Assing(*expr.Name, val)
 }
-
 func computeVarExpr(expr *ast.Expr) (any, error) {
-	return env.Get(*expr.Name)
+	return currentEnv.Get(*expr.Name)
+
 }
 
 func computeUnaryExpr(expr *ast.Expr) (any, error) {
