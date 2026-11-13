@@ -13,46 +13,79 @@ var goToNiniRprMap map[any]string = map[any]string{
 	true:  "verdadero",
 }
 
+func execute(stmt ast.Stmt) (any, error) {
+	switch stmt.Type {
+	//el ordern importa aqui ???
+	case ast.VarDeclarationStmt:
+		err := declareVar(stmt)
+		if err != nil {
+			return nil, err
+		}
+	case ast.PrintStmt:
+		err := printExpr(stmt.Expr)
+		if err != nil {
+			return nil, err
+		}
+	case ast.IfStmt:
+		err := computeIfStmt(stmt)
+		if err != nil {
+			return nil, err
+		}
+	case ast.WhileStmt:
+		return nil, NotImplementedErr
+	case ast.BlockStmt:
+		newEnv := enviroment.NewEnv(&currentEnv)
+		_, err := computeBLockStmt(stmt, &newEnv)
+		if err != nil {
+			return nil, err
+		}
+	case ast.ExprStmt:
+		val, err := computeExpr(stmt.Expr)
+		if err != nil {
+			return nil, err
+		}
+		v, ok := goToNiniRprMap[val]
+		if ok {
+			val = v
+		}
+		fmt.Printf("expresion ejecutada => %v \n", val)
+	default:
+		return nil, UnknownStmtTypeErr
+	}
+	return nil, nil
+}
+
 func Interpret(stmts []ast.Stmt) (any, error) {
 	for _, stmt := range stmts {
-		switch stmt.Type {
-		//el ordern importa aqui ???
-		case ast.VarDeclarationStmt:
-			err := declareVar(stmt)
-			if err != nil {
-				return nil, err
-			}
-		case ast.PrintStmt:
-			err := printExpr(stmt.Expr)
-			if err != nil {
-				return nil, err
-			}
-		case ast.IfStmt:
-			return nil, NotImplementedErr
-		case ast.WhileStmt:
-			return nil, NotImplementedErr
-		case ast.BlockStmt:
-			//return nil, NotImplementedErr
-			newEnv := enviroment.NewEnv(&currentEnv)
-			_, err := computeBLockStmt(stmt, &newEnv)
-			if err != nil {
-				return nil, err
-			}
-		case ast.ExprStmt:
-			val, err := computeExpr(stmt.Expr)
-			if err != nil {
-				return nil, err
-			}
-			v, ok := goToNiniRprMap[val]
-			if ok {
-				val = v
-			}
-			fmt.Printf("expresion ejecutada => %v \n", val)
-		default:
-			return nil, UnknownStmtTypeErr
+		val, err := execute(stmt)
+		if err != nil {
+			return nil, err
+		}
+		if val != nil {
+			//return val, nil
+			fmt.Println(val)
 		}
 	}
 	return nil, nil
+}
+
+func computeIfStmt(stmt ast.Stmt) error {
+	condition, err := computeExpr(stmt.Condition)
+	if err != nil {
+		return err
+	}
+	if isTruthy(condition) {
+		_, err := execute(*stmt.ThenBranch)
+		if err != nil {
+			return err
+		}
+	} else {
+		_, err := execute(*stmt.ElseBranch)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // is this the right place ???

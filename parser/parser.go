@@ -50,6 +50,10 @@ func (p *parser) varDeclaration() ast.Stmt {
 
 func (p *parser) statement() ast.Stmt {
 
+	if p.match(token.If) {
+		return p.ifStatement()
+	}
+
 	if p.match(token.Print) {
 		expr := p.expression()
 		p.consume(token.Semicolon, "Se espera ';' despues del valor")
@@ -64,6 +68,21 @@ func (p *parser) statement() ast.Stmt {
 	stmt := ast.NewExprStmt(&expr)
 	p.consume(token.Semicolon, "Se espera ';' despues dela expresion")
 	return stmt
+}
+
+func (p *parser) ifStatement() ast.Stmt {
+
+	//se podria hacer que los parenticis no sea obligatorios como en Go
+	p.consume(token.LeftParen, "Se espera '(' despues de un si")
+	condition := p.expression()
+	p.consume(token.RightParen, "Se espera ')' despues de la condicion de un si")
+	thenBranch := p.statement()
+
+	var elseBranch ast.Stmt
+	if p.match(token.Else) {
+		elseBranch = p.statement()
+	}
+	return ast.NewIfStmt(&condition, &thenBranch, &elseBranch)
 }
 
 // un block statement no es mas que una sub lista de estatements

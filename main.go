@@ -31,6 +31,7 @@ func runFile(path string) {
 	}
 	err = run(string(bytes))
 	if err != nil {
+		fmt.Println(err.Error())
 		os.Exit(64)
 	}
 }
