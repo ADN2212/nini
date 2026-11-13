@@ -106,7 +106,11 @@ func computeVarAssingExpr(expr *ast.Expr) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	return nil, env.Assing(*expr.Name, val)
+	//aqui estoy haciendo que el hecho de asignar una expresion retorne el valor asignado
+	//el que esto se haga o no va a depender del paradigma dominante del lenguage
+	//por ejemplo los lenguajes funcionales no tienen funciones que no retornen nada
+	//en Scala las funciones "vacias" retornan Unit
+	return val, env.Assing(*expr.Name, val)
 }
 
 func computeVarExpr(expr *ast.Expr) (any, error) {
