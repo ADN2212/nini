@@ -135,29 +135,29 @@ func printExpr(expr *ast.Expr) error {
 }
 
 func computeExpr(expr *ast.Expr) (any, error) {
-	if expr == nil {
-		return nil, nil
+	if expr != nil {
+		switch expr.Type {
+		case ast.VarAssingmentExpr:
+			return computeVarAssingExpr(expr)
+		//Estas 4 caen dentro de la cantegoria de operaciones binarias
+		case ast.LogicalExpr:
+			//return nil, NotImplementedErr
+			return computeLogicalExpr(*expr)
+		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr:
+			return computeBynaryExpr(expr)
+		case ast.UnaryExpr:
+			return computeUnaryExpr(expr)
+		case ast.PrimaryExpr:
+			return expr.Val, nil
+		case ast.GroupExpr:
+			return computeExpr(expr.Right)
+		case ast.VarExpr:
+			return computeVarExpr(expr)
+		default:
+			return nil, UnknowExprTypeErr
+		}
 	}
-	switch expr.Type {
-	case ast.VarAssingmentExpr:
-		return computeVarAssingExpr(expr)
-	//Estas 4 caen dentro de la cantegoria de operaciones binarias
-	case ast.LogicalExpr:
-		//return nil, NotImplementedErr
-		return computeLogicalExpr(*expr)
-	case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr:
-		return computeBynaryExpr(expr)
-	case ast.UnaryExpr:
-		return computeUnaryExpr(expr)
-	case ast.PrimaryExpr:
-		return expr.Val, nil
-	case ast.GroupExpr:
-		return computeExpr(expr.Right)
-	case ast.VarExpr:
-		return computeVarExpr(expr)
-	default:
-		return nil, UnknowExprTypeErr
-	}
+	return nil, NilExprErr
 }
 
 func computeLogicalExpr(expr ast.Expr) (any, error) {
@@ -180,7 +180,7 @@ func computeLogicalExpr(expr ast.Expr) (any, error) {
 			return nil, err
 		}
 		return isTruthy(r), nil
-	//para el operador y; si la expresion de la izquerda es false, retornamos false sin evaluar la expression de la derecha. 
+	//para el operador y; si la expresion de la izquerda es false, retornamos false sin evaluar la expression de la derecha.
 	case token.And:
 		if !leftTrutyVal {
 			fmt.Println("short cicuiting AND expression")
