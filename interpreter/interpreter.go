@@ -70,6 +70,7 @@ func Interpret(stmts []ast.Stmt) (any, error) {
 }
 
 func computeIfStmt(stmt ast.Stmt) error {
+	fmt.Println("In if statement")
 	condition, err := computeExpr(stmt.Condition)
 	if err != nil {
 		return err
@@ -160,7 +161,11 @@ func computeExpr(expr *ast.Expr) (any, error) {
 }
 
 func computeLogicalExpr(expr ast.Expr) (any, error) {
-
+	fmt.Println("In logical exprds")
+	
+	fmt.Println(expr.Left)
+	fmt.Println(expr.Right)
+	
 	l, err := computeExpr(expr.Left)
 	if err != nil {
 		return nil, err
@@ -175,9 +180,11 @@ func computeLogicalExpr(expr ast.Expr) (any, error) {
 	fmt.Println(r)
 
 	if expr.Operator.Type == token.Or {
+		fmt.Println("or")
 		return isTruthy(l) || isTruthy(r), nil
 	}
 
+	fmt.Println("and")
 	return isTruthy(l) && isTruthy(r), nil
 	// //Esto tiene algo que ver con short circuiting, pero no lo entiendo del todo
 	// if expr.Operator.Type == token.Or {

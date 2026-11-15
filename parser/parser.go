@@ -123,7 +123,7 @@ func (p *parser) or() ast.Expr {
 	for p.match(token.Or) {
 		operator := p.previous()
 		right := p.equality()
-		newExpr = ast.NewBynaryExpr(operator, expr.Left, &right, ast.LogicalExpr)
+		newExpr = ast.NewBynaryExpr(operator, &expr, &right, ast.LogicalExpr)
 	}
 	if newExpr.IsEmpty() {
 		return expr
@@ -137,7 +137,7 @@ func (p *parser) and() ast.Expr {
 	for p.match(token.And) {
 		operator := p.previous()
 		right := p.equality()
-		newExpr = ast.NewBynaryExpr(operator, expr.Left, &right, ast.LogicalExpr)
+		newExpr = ast.NewBynaryExpr(operator, &expr, &right, ast.LogicalExpr)
 	}
 	if newExpr.IsEmpty() {
 		return expr

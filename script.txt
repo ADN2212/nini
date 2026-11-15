@@ -1,8 +1,8 @@
 sea x = 5;
 sea z = 25;
 
-si (verdadero o falso) {
-    ver "mayores";
+si (x < 32 + 87 y 25 == 5*5) {
+    ver "se cumple :)";
 } sino {
-    ver "menores";
+    ver "no se cumple :(";
 }
