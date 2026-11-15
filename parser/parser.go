@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	//"fmt"
 	"github.com/ADN2212/nini/ast"
 	"github.com/ADN2212/nini/token"
 )
@@ -60,24 +61,35 @@ func (p *parser) statement() ast.Stmt {
 		return ast.NewPrintStmt(&expr)
 	}
 
+	if p.match(token.While) {
+		//fmt.Println("In while statement")
+		return p.whileStmt()
+	}
+
 	if p.match(token.LeftBrace) {
 		return ast.NewBlockStmt(p.block())
 	}
 
 	expr := p.expression()
 	stmt := ast.NewExprStmt(&expr)
-	p.consume(token.Semicolon, "Se espera ';' despues dela expresion")
+	p.consume(token.Semicolon, "Se espera ';' despues de la expresion")
 	return stmt
 }
 
-func (p *parser) ifStatement() ast.Stmt {
+func (p *parser) whileStmt() ast.Stmt {
+	p.consume(token.LeftParen, "Se espera un '(' despues de un mientras")
+	condition := p.expression()
+	p.consume(token.RightParen, "Se espera un ')' al final de la expresion de un mientras")
+	body := p.statement()
+	return ast.NewWhileStmt(&condition, &body)
+}
 
+func (p *parser) ifStatement() ast.Stmt {
 	//se podria hacer que los parenticis no sea obligatorios como en Go
 	p.consume(token.LeftParen, "Se espera '(' despues de un si")
 	condition := p.expression()
 	p.consume(token.RightParen, "Se espera ')' despues de la condicion de un si")
 	thenBranch := p.statement()
-
 	var elseBranch ast.Stmt
 	if p.match(token.Else) {
 		elseBranch = p.statement()

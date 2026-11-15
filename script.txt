@@ -1,8 +1,6 @@
-sea x = 5;
-sea z = 25;
+sea i = 1;
 
-si (x > 32 y 25 == 5*5 + 2*4/152) {
-    ver "se cumple :)";
-} sino {
-    ver "no se cumple :(";
+mientras (i < 10) {
+    ver i;
+    i = i + 1;   
 }
