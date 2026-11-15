@@ -1,7 +1,7 @@
 sea x = 5;
 sea z = 25;
 
-si (x < 32 + 87 y 25 == 5*5) {
+si (x > 32 y 25 == 5*5 + 2*4/152) {
     ver "se cumple :)";
 } sino {
     ver "no se cumple :(";

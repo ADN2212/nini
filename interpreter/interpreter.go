@@ -162,47 +162,38 @@ func computeExpr(expr *ast.Expr) (any, error) {
 
 func computeLogicalExpr(expr ast.Expr) (any, error) {
 	fmt.Println("In logical exprds")
-	
-	fmt.Println(expr.Left)
-	fmt.Println(expr.Right)
-	
 	l, err := computeExpr(expr.Left)
 	if err != nil {
 		return nil, err
 	}
-
-	r, err := computeExpr(expr.Right)
-	if err != nil {
-		return nil, err
+	leftTrutyVal := isTruthy(l)
+	switch expr.Operator.Type {
+	//Aqui estoy implementatand short circuiting:
+	//Para el operador o; la expresion de la ezquierda es true retornamos true si evaluar la expr de la derecha
+	case token.Or:
+		if leftTrutyVal {
+			fmt.Println("short cicuiting OR expression")
+			return true, nil
+		}
+		r, err := computeExpr(expr.Right)
+		if err != nil {
+			return nil, err
+		}
+		return isTruthy(r), nil
+	//para el operador y; si la expresion de la izquerda es false, retornamos false sin evaluar la expression de la derecha. 
+	case token.And:
+		if !leftTrutyVal {
+			fmt.Println("short cicuiting AND expression")
+			return false, nil
+		}
+		r, err := computeExpr(expr.Right)
+		if err != nil {
+			return nil, err
+		}
+		return isTruthy(r), nil
+	default:
+		return nil, InvalidadLogicalOperator
 	}
-
-	fmt.Println(l)
-	fmt.Println(r)
-
-	if expr.Operator.Type == token.Or {
-		fmt.Println("or")
-		return isTruthy(l) || isTruthy(r), nil
-	}
-
-	fmt.Println("and")
-	return isTruthy(l) && isTruthy(r), nil
-	// //Esto tiene algo que ver con short circuiting, pero no lo entiendo del todo
-	// if expr.Operator.Type == token.Or {
-	// 	if isTruthy(left) {
-	// 		return left, nil
-	// 	}
-	// } else {
-	// 	if !isTruthy(left) {
-	// 		return left, nil
-	// 	}
-	// }
-
-	// // if expr.Right != nil {
-	// // 	return computeExpr(expr.Right)
-	// // }
-	// //return expr.Val, nil
-	// return computeExpr(expr.Right)
-
 }
 
 func computeVarAssingExpr(expr *ast.Expr) (any, error) {
