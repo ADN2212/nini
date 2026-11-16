@@ -18,42 +18,32 @@ var goToNiniRprMap map[any]string = map[any]string{
 func execute(stmt ast.Stmt, env *enviroment.Env) (any, error) {
 	//fmt.Printf("En env '%v' con valores %v \n", currentEnv.Name, currentEnv.Values)
 	switch stmt.Type {
-	//el ordern importa aqui ???
 	case ast.VarDeclarationStmt:
-		//fmt.Println("Por aqui?")
 		err := declareVar(stmt, env)
 		if err != nil {
 			return nil, err
 		}
 	case ast.PrintStmt:
-		//fmt.Println("Por aca ??")
 		err := printExpr(stmt.Expr, env)
 		if err != nil {
 			return nil, err
 		}
 	case ast.IfStmt:
-		//fmt.Println("Por acuya ???")
 		err := computeIfStmt(stmt, env)
 		if err != nil {
 			return nil, err
 		}
 	case ast.WhileStmt:
-		//fmt.Println("In while stmt ...")
 		err := computeWhileStmt(stmt, env)
 		if err != nil {
 			return nil, err
 		}
-		//return nil, NotImplementedErr
 	case ast.BlockStmt:
-		//fmt.Println("In block statement ...")
-		//newEnv := enviroment.NewEnv(&currentEnv)
 		_, err := computeBLockStmt(stmt, env)
 		if err != nil {
 			return nil, err
 		}
-		//fmt.Println(env.Name)
 	case ast.ExprStmt:
-		//fmt.Println("Expr statement")
 		val, err := computeExpr(stmt.Expr, env)
 		if err != nil {
 			return nil, err
@@ -62,7 +52,6 @@ func execute(stmt ast.Stmt, env *enviroment.Env) (any, error) {
 		if ok {
 			val = v
 		}
-		//fmt.Printf("expresion ejecutada => %v \n", val)
 	default:
 		return nil, UnknownStmtTypeErr
 	}
@@ -88,7 +77,6 @@ func Interpret(stmts []ast.Stmt, env *enviroment.Env) (any, error) {
 // tal vez compute no sea el prefijo mas adecuando para esta funciones sobre statements
 func computeWhileStmt(stmt ast.Stmt, env *enviroment.Env) error {
 	for {
-		//fmt.Println("Starting iteration ...")
 		val, err := computeExpr(stmt.Condition, env)
 		if err != nil {
 			//fmt.Println("Aqui ??")
@@ -99,7 +87,6 @@ func computeWhileStmt(stmt ast.Stmt, env *enviroment.Env) error {
 			//isn't it ?
 			_, err := execute(*stmt.ThenBranch, env)
 			if err != nil {
-				//fmt.Println("o aqui ??")
 				return err
 			}
 		} else {
@@ -110,7 +97,6 @@ func computeWhileStmt(stmt ast.Stmt, env *enviroment.Env) error {
 }
 
 func computeIfStmt(stmt ast.Stmt, env *enviroment.Env) error {
-	//fmt.Println("In if statement")
 	condition, err := computeExpr(stmt.Condition, env)
 	if err != nil {
 		return err
@@ -129,22 +115,12 @@ func computeIfStmt(stmt ast.Stmt, env *enviroment.Env) error {
 	return nil
 }
 
-// is this the right place ???
-// el scope global no tiene parent, de ahi el nil
-//var currentEnv enviroment.Env = enviroment.NewEnv("global", nil)
-
-//var prevEnv enviroment.Env = enviroment.NewEnv(nil)
-
 func computeBLockStmt(stmt ast.Stmt, env *enviroment.Env) (any, error) {
-	//fmt.Println("Entrando al bloque")
 	newEnv := enviroment.NewEnv("sub env", env)
-	//fmt.Println(newEnv.ParentEnv.Values)
 	val, err := Interpret(stmt.Statements, &newEnv)
 	if err != nil {
-		//fmt.Println("Here")
 		return nil, err
 	}
-	//fmt.Println("Saliendo del bloque")
 	return val, nil
 }
 
@@ -175,7 +151,6 @@ func printExpr(expr *ast.Expr, env *enviroment.Env) error {
 }
 
 func computeExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
-	//fmt.Println("Computing expr ...")
 	if expr != nil {
 		switch expr.Type {
 		case ast.VarAssingmentExpr:
@@ -183,23 +158,16 @@ func computeExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 			return computeVarAssingExpr(expr, env)
 		//Estas 4 caen dentro de la cantegoria de operaciones binarias
 		case ast.LogicalExpr:
-			//fmt.Println(2)
-			//return nil, NotImplementedErr
 			return computeLogicalExpr(*expr, env)
 		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr:
-			//fmt.Println("Tiene que ser por aqui ???")
 			return computeBynaryExpr(expr, env)
 		case ast.UnaryExpr:
-			//fmt.Println(3)
 			return computeUnaryExpr(expr, env)
 		case ast.PrimaryExpr:
-			//fmt.Println(4)
 			return expr.Val, nil
 		case ast.GroupExpr:
-			//fmt.Println(5)
 			return computeExpr(expr.Right, env)
 		case ast.VarExpr:
-			//fmt.Println(6)
 			return computeVarExpr(expr, env)
 		default:
 			return nil, UnknowExprTypeErr
@@ -209,7 +177,6 @@ func computeExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 }
 
 func computeLogicalExpr(expr ast.Expr, env *enviroment.Env) (any, error) {
-	//fmt.Println("In logical exprds")
 	l, err := computeExpr(expr.Left, env)
 	if err != nil {
 		return nil, err
@@ -256,8 +223,6 @@ func computeVarAssingExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 	return val, env.Assing(*expr.Name, val)
 }
 func computeVarExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
-	//fmt.Println(currentEnv.Name)
-	//fmt.Println(currentEnv.ParentEnv == &currentEnv)
 	return env.Get(*expr.Name)
 }
 
@@ -273,7 +238,7 @@ func computeUnaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 			return nil, ShouldBeNumberErr
 		}
 		return -num, nil
-	case token.Not: //esto es el no
+	case token.Not:
 		return !isTruthy(r), nil
 	default:
 		return nil, UnknowUnaryOperator
