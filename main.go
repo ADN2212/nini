@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/ADN2212/nini/enviroment"
 	"github.com/ADN2212/nini/interpreter"
 	"github.com/ADN2212/nini/lexer"
 	"github.com/ADN2212/nini/parser"
@@ -11,25 +12,27 @@ import (
 
 func main() {
 	argsNum := len(os.Args)
+	globalEnv := enviroment.NewEnv("global", nil)
 	switch argsNum {
 	case 2:
 		fmt.Println("Ejecutando script")
-		runFile(os.Args[1])
+		runFile(os.Args[1], &globalEnv)
 	case 1:
+		//globalEnv := enviroment.NewEnv("global", nil)
 		fmt.Println("Starting commant promtp")
-		runPrompt()
+		runPrompt(&globalEnv)
 	default:
 		fmt.Println("Opcion no definida")
 	}
 }
 
-func runFile(path string) {
+func runFile(path string, env *enviroment.Env) {
 	bytes, err := os.ReadFile(path)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(64)
 	}
-	err = run(string(bytes))
+	err = run(string(bytes), env)
 	if err != nil {
 		fmt.Println(err.Error())
 		os.Exit(64)
@@ -37,9 +40,10 @@ func runFile(path string) {
 }
 
 // Esta es la funcion que se usa cuando el user esta usando el REPL
-func runPrompt() {
+func runPrompt(env *enviroment.Env) {
 	//fmt.Println("running prompt ...")
 	input := bufio.NewScanner(os.Stdin) //Este es el scanner para lo que escirba el user
+	//globalEnv := enviroment.NewEnv("global", nil)
 	for {
 		fmt.Print("#nini>>")
 		ok := input.Scan() //escanea la linea
@@ -51,7 +55,7 @@ func runPrompt() {
 			os.Exit(64)
 		}
 		//fmt.Println(line)
-		err := run(line)
+		err := run(line, env)
 		if err != nil {
 			fmt.Println(err.Error())
 			os.Exit(64)
@@ -59,19 +63,18 @@ func runPrompt() {
 	}
 }
 
-func run(src string) error {
+func run(src string, env *enviroment.Env) error {
 	tokens, err := lexer.ScanTokens(src)
 	if err != nil {
 		return err
 	}
-	// for _, t := range tokens {
-	// 	fmt.Printf("lexema: %v, tipo: %v, valor: %v\n", t.Lexeme, t.Type, t.Literal)
-	// }
+
 	stmts, err := parser.Parse(tokens)
 	if err != nil {
 		return err
 	}
-	res, err := interpreter.Interpret(stmts)
+
+	res, err := interpreter.Interpret(stmts, env)
 	if err != nil {
 		return err
 	}

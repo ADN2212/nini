@@ -1,6 +1,9 @@
+sea suma = 0;
 sea i = 1;
 
-mientras (i < 10) {
-    ver i;
-    i = i + 1;   
+mientras (i <= 10) {
+    suma = suma + i;
+    i = i + 1;
 }
+
+ver suma;
