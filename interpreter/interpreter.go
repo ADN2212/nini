@@ -259,6 +259,7 @@ func computeBynaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 	leftVal, okL := l.(float64)
 	rightVal, okR := r.(float64)
 
+	//Ojo: todo lo que esta dentro de los if pueden ser funciones helpers para minimizar la logitud de computeBynaryExpr.
 	if okL && okR {
 		switch expr.Operator.Type {
 		case token.Plus:
@@ -313,6 +314,29 @@ func computeBynaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 			return nil, UnknowBynaryOperator
 		}
 	}
+
+	leftStr, okL = l.(string)
+	rightNum, okR := r.(float64)
+	if okL && okR {
+		switch expr.Operator.Type {
+		case token.Plus:
+			return fmt.Sprintf("%v %v", leftStr, rightNum), nil
+		default:
+			return nil, UnknowBynaryOperator
+		}
+	}
+
+	leftNum, okL := l.(float64)
+	rightStr, okR = r.(string)
+	if okL && okR {
+		switch expr.Operator.Type {
+		case token.Plus:
+			return fmt.Sprintf("%v %v", leftNum, rightStr), nil
+		default:
+			return nil, UnknowBynaryOperator
+		}
+	}
+
 	return nil, UnknowBynaryOperation
 }
 

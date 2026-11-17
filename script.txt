@@ -2,8 +2,14 @@ sea suma = 0;
 sea i = 1;
 
 mientras (i <= 10) {
-    suma = suma + i;
+    si (i >= 1 y i <= 5)  {
+        ver "en el primer intervalo";
+        suma = suma + 2;
+    } sino {
+        ver "en el segundo";
+        suma = suma + 1;
+    }
     i = i + 1;
 }
 
-ver suma;
+ver suma + "es el resultado XD";
