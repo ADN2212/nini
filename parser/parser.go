@@ -2,7 +2,6 @@ package parser
 
 import (
 	"errors"
-	//"fmt"
 	"github.com/ADN2212/nini/ast"
 	"github.com/ADN2212/nini/token"
 )
@@ -62,7 +61,6 @@ func (p *parser) statement() ast.Stmt {
 	}
 
 	if p.match(token.While) {
-		//fmt.Println("In while statement")
 		return p.whileStmt()
 	}
 
@@ -85,7 +83,6 @@ func (p *parser) whileStmt() ast.Stmt {
 }
 
 func (p *parser) ifStatement() ast.Stmt {
-	//se podria hacer que los parenticis no sea obligatorios como en Go
 	p.consume(token.LeftParen, "Se espera '(' despues de un si")
 	condition := p.expression()
 	p.consume(token.RightParen, "Se espera ')' despues de la condicion de un si")
@@ -97,10 +94,8 @@ func (p *parser) ifStatement() ast.Stmt {
 	return ast.NewIfStmt(&condition, &thenBranch, &elseBranch)
 }
 
-// un block statement no es mas que una sub lista de estatements
 func (p *parser) block() []ast.Stmt {
 	stmts := []ast.Stmt{}
-	//mientras no aparezca un right brace y no estemos al final del file
 	for !p.check(token.RightBrace) && !p.isAtEnd() {
 		stmts = append(stmts, p.declaration())
 	}
@@ -112,17 +107,14 @@ func (p *parser) expression() ast.Expr {
 	return p.assignment()
 }
 
-// mejora este mensaje
-var InvalidAssingmentTargetErr error = errors.New("No se puede asignar esto")
-
 func (p *parser) assignment() ast.Expr {
 	expr := p.or()
 	if p.match(token.Equal) {
 		//esta llamanda recursiva sirve para calcular la expresiones que deben hacece antes de assinar el valor a la variable.
-		exprTuAssing := p.assignment()
+		exprToAssing := p.assignment()
 		if expr.Type == ast.VarExpr {
 			name := expr.Name
-			return ast.NewVarAssingmentExpr(name, &exprTuAssing)
+			return ast.NewVarAssingmentExpr(name, &exprToAssing)
 		}
 		p.err = InvalidAssingmentTargetErr
 	}
@@ -304,6 +296,6 @@ func (p *parser) previous() token.Token {
 	return p.tokens[p.current-1]
 }
 
-func (p *parser) peekNext() token.Token {
-	return p.tokens[p.current+1]
-}
+// func (p *parser) peekNext() token.Token {
+// 	return p.tokens[p.current+1]
+// }
