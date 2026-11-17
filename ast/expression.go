@@ -1,0 +1,79 @@
+package ast
+
+import (
+	"github.com/ADN2212/nini/token"
+)
+
+type ExprType int
+
+// este orden va de la mas compleja a la mas simple
+// importa el orden ???
+const (
+	VarAssingmentExpr = iota + 1
+	LogicalExpr
+	EqualityExpr   //
+	ComparisonExpr //
+	TermExpr       //
+	FactorExpr     //
+	UnaryExpr      //
+	PrimaryExpr    //estos son los literals
+	GroupExpr      //
+	VarExpr
+)
+
+type Expr struct {
+	Name     *token.Token
+	Val      any
+	Type     ExprType
+	Left     *Expr
+	Right    *Expr
+	Operator *token.Token
+}
+
+// Comprueba que una expression inicializda este vacia, es decir que no tenga valores asignados a ninguno de los campos.
+func (e *Expr) IsEmpty() bool {
+	return e.Val == nil && e.Type == 0 && e.Left == nil && e.Right == nil && e.Operator == nil
+}
+
+func NewUnaryExpr(operator token.Token, rightExpr *Expr) Expr {
+	return Expr{
+		Type:     UnaryExpr,
+		Operator: &operator,
+		Right:    rightExpr,
+	}
+}
+
+func NewBynaryExpr(
+	operator token.Token,
+	leftExpr *Expr,
+	rightExpr *Expr,
+	_type ExprType) Expr {
+	return Expr{
+		Type:     _type,
+		Operator: &operator,
+		Left:     leftExpr,
+		Right:    rightExpr,
+	}
+}
+
+func NewGroupExpr(expr *Expr) Expr {
+	return Expr{
+		Type:  GroupExpr,
+		Right: expr, //podria ser cualquiera de los dos
+	}
+}
+
+func NewVarExpr(name *token.Token) Expr {
+	return Expr{
+		Type: VarExpr,
+		Name: name,
+	}
+}
+
+func NewVarAssingmentExpr(name *token.Token, rightExp *Expr) Expr {
+	return Expr{
+		Name:  name,
+		Type:  VarAssingmentExpr,
+		Right: rightExp,
+	}
+}
