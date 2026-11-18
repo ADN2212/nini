@@ -26,10 +26,10 @@ func ScanTokens(sourceCode string) ([]token.Token, error) {
 	}
 
 	lexer.tokens = append(lexer.tokens, token.Token{
-		Type: token.EOF,
-		Lexeme: "",
+		Type:    token.EOF,
+		Lexeme:  "",
 		Literal: nil,
-		Line: lexer.line,
+		Line:    lexer.line,
 	})
 
 	return lexer.tokens, nil
@@ -64,6 +64,8 @@ func (lexer *lexer) scanNextToken() {
 		lexer.addToken(token.Semicolon, nil)
 	case '*':
 		lexer.addToken(token.Star, nil)
+	case '%':
+		lexer.addToken(token.Mod, nil)
 
 	//en nini usare "no" para hacer negacioens
 	case '!':

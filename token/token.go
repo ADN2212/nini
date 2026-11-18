@@ -23,6 +23,7 @@ const (
 	Semicolon             // ;
 	Slash                 // /
 	Star                  // *
+	Mod                   //%
 
 	// Logicos
 	Not          // no

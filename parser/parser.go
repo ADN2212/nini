@@ -87,7 +87,7 @@ func (p *parser) ifStatement() ast.Stmt {
 	condition := p.expression()
 	p.consume(token.RightParen, "Se espera ')' despues de la condicion de un si")
 	thenBranch := p.statement()
-	var elseBranch ast.Stmt
+	var elseBranch ast.Stmt//
 	if p.match(token.Else) {
 		elseBranch = p.statement()
 	}
@@ -194,7 +194,7 @@ func (p *parser) term() ast.Expr {
 func (p *parser) factor() ast.Expr {
 	expr := p.unary()
 	newExpr := ast.Expr{}
-	for p.match(token.Slash, token.Star) {
+	for p.match(token.Slash, token.Star, token.Mod) {
 		operator := p.previous()
 		right := p.unary()
 		newExpr = ast.NewBynaryExpr(operator, &expr, &right, ast.FactorExpr)

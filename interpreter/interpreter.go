@@ -187,7 +187,7 @@ func computeLogicalExpr(expr ast.Expr, env *enviroment.Env) (any, error) {
 	//Para el operador o; la expresion de la ezquierda es true retornamos true si evaluar la expr de la derecha
 	case token.Or:
 		if leftTrutyVal {
-			fmt.Println("short cicuiting OR expression")
+			//fmt.Println("short cicuiting OR expression")
 			return true, nil
 		}
 		r, err := computeExpr(expr.Right, env)
@@ -198,7 +198,7 @@ func computeLogicalExpr(expr ast.Expr, env *enviroment.Env) (any, error) {
 	//para el operador y; si la expresion de la izquerda es false, retornamos false sin evaluar la expression de la derecha.
 	case token.And:
 		if !leftTrutyVal {
-			fmt.Println("short cicuiting AND expression")
+			//fmt.Println("short cicuiting AND expression")
 			return false, nil
 		}
 		r, err := computeExpr(expr.Right, env)
@@ -262,6 +262,7 @@ func computeBynaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 	//Ojo: todo lo que esta dentro de los if pueden ser funciones helpers para minimizar la logitud de computeBynaryExpr.
 	if okL && okR {
 		switch expr.Operator.Type {
+		//aritmetica
 		case token.Plus:
 			return leftVal + rightVal, nil
 		case token.Minus:
@@ -270,6 +271,17 @@ func computeBynaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 			return leftVal / rightVal, nil
 		case token.Star:
 			return leftVal * rightVal, nil
+		case token.Mod:
+			leftInt := int(leftVal)
+			rightInt := int(rightVal)
+			if leftVal-float64(leftInt) != 0 || rightVal-float64(rightInt) != 0 {
+				return nil, ModOnlyForIntsErr
+			} else {
+				//como en nini todo numero es un float64,
+				// debo parsear el resultado para que se puedan hacer operaciones conjuntas
+				return float64(leftInt % rightInt), nil
+			}
+		//comparaciones:
 		case token.Greater:
 			return leftVal > rightVal, nil
 		case token.GreaterEqual:
@@ -278,6 +290,8 @@ func computeBynaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 			return leftVal < rightVal, nil
 		case token.LessEqual:
 			return leftVal <= rightVal, nil
+
+		//Igualdades:
 		case token.BangEqual: //!=
 			return leftVal != rightVal, nil
 		case token.EqualEqual:
