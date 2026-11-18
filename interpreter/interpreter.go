@@ -3,7 +3,6 @@ package interpreter
 import (
 	"errors"
 	"fmt"
-
 	"github.com/ADN2212/nini/ast"
 	"github.com/ADN2212/nini/enviroment"
 	"github.com/ADN2212/nini/token"
@@ -79,12 +78,10 @@ func computeWhileStmt(stmt ast.Stmt, env *enviroment.Env) error {
 	for {
 		val, err := computeExpr(stmt.Condition, env)
 		if err != nil {
-			//fmt.Println("Aqui ??")
 			return err
 		}
 		if isTruthy(val) {
-			//el body de un while se puede interpretar como la then branch de un if
-			//isn't it ?
+			//el body de un while se puede interpretar como la then branch de un if isn't it ?
 			_, err := execute(*stmt.ThenBranch, env)
 			if err != nil {
 				return err
@@ -102,19 +99,12 @@ func computeIfStmt(stmt ast.Stmt, env *enviroment.Env) error {
 		return err
 	}
 	if isTruthy(condition) {
-		_, err := execute(*stmt.ThenBranch, env)
-		if err != nil {
-			return err
-		}
-	} else {
-		if stmt.ElseBranch != nil {
-			_, err := execute(*stmt.ElseBranch, env)
-			if err != nil {
-				return err
-			}
-		}
+		_, err = execute(*stmt.ThenBranch, env)
 	}
-	return nil
+	if stmt.ElseBranch != nil {
+		_, err = execute(*stmt.ElseBranch, env)
+	}
+	return err
 }
 
 func computeBLockStmt(stmt ast.Stmt, env *enviroment.Env) (any, error) {

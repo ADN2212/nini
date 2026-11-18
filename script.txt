@@ -1,16 +1,13 @@
 sea i = 1;
+sea sumaPares = 0;
 
 mientras (i <= 100) {
-    si (i % 3 == 0 y i % 5 == 0) {
-        ver "fizzbuzz";
-    }
-    si (i % 3 == 0) {
-        ver "fizz";
+    si (i % 2 == 0) {
+        sumaPares = sumaPares + i;
     } sino {
-        si (i % 5 == 0) {
-            ver "buzz";
-        }
-        ver i;
+        ver "impar";
     }
     i = i + 1;
 }
+
+ver "La suma de los pares es" + sumaPares;
