@@ -107,9 +107,11 @@ func computeIfStmt(stmt ast.Stmt, env *enviroment.Env) error {
 			return err
 		}
 	} else {
-		_, err := execute(*stmt.ElseBranch, env)
-		if err != nil {
-			return err
+		if stmt.ElseBranch != nil {
+			_, err := execute(*stmt.ElseBranch, env)
+			if err != nil {
+				return err
+			}
 		}
 	}
 	return nil

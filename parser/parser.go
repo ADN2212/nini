@@ -87,11 +87,11 @@ func (p *parser) ifStatement() ast.Stmt {
 	condition := p.expression()
 	p.consume(token.RightParen, "Se espera ')' despues de la condicion de un si")
 	thenBranch := p.statement()
-	var elseBranch ast.Stmt//
 	if p.match(token.Else) {
-		elseBranch = p.statement()
+		elseBranch := p.statement()
+		return ast.NewIfStmt(&condition, &thenBranch, &elseBranch)
 	}
-	return ast.NewIfStmt(&condition, &thenBranch, &elseBranch)
+	return ast.NewIfStmt(&condition, &thenBranch, nil)
 }
 
 func (p *parser) block() []ast.Stmt {

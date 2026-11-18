@@ -1,10 +1,16 @@
 sea i = 1;
 
-mientras (i <= 10) {
-    si (i % 2 == 0) {
-        ver "par";
+mientras (i <= 100) {
+    si (i % 3 == 0 y i % 5 == 0) {
+        ver "fizzbuzz";
+    }
+    si (i % 3 == 0) {
+        ver "fizz";
     } sino {
-        ver "impar";
+        si (i % 5 == 0) {
+            ver "buzz";
+        }
+        ver i;
     }
     i = i + 1;
 }
