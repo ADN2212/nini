@@ -253,108 +253,33 @@ func computeBynaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 
 	//Ojo: todo lo que esta dentro de los if pueden ser funciones helpers para minimizar la logitud de computeBynaryExpr.
 	if okL && okR {
-		switch expr.Operator.Type {
-		//aritmetica
-		case token.Plus:
-			return leftVal + rightVal, nil
-		case token.Minus:
-			return leftVal - rightVal, nil
-		case token.Slash:
-			return leftVal / rightVal, nil
-		case token.Star:
-			return leftVal * rightVal, nil
-		case token.Mod:
-			leftInt := int(leftVal)
-			rightInt := int(rightVal)
-			if leftVal-float64(leftInt) != 0 || rightVal-float64(rightInt) != 0 {
-				return nil, ModOnlyForIntsErr
-			} else {
-				//como en nini todo numero es un float64,
-				// debo parsear el resultado para que se puedan hacer operaciones conjuntas
-				return float64(leftInt % rightInt), nil
-			}
-		//comparaciones:
-		case token.Greater:
-			return leftVal > rightVal, nil
-		case token.GreaterEqual:
-			return leftVal >= rightVal, nil
-		case token.Less:
-			return leftVal < rightVal, nil
-		case token.LessEqual:
-			return leftVal <= rightVal, nil
-
-		//Igualdades:
-		case token.BangEqual: //!=
-			return leftVal != rightVal, nil
-		case token.EqualEqual:
-			return leftVal == rightVal, nil
-		default:
-			return nil, UnknowBynaryOperator
-		}
+		return operateNumbers(leftVal, rightVal, expr.Operator)
 	}
 
 	leftStr, okL := l.(string)
 	rightStr, okR := r.(string)
 	if okL && okR {
-		switch expr.Operator.Type {
-		case token.Plus:
-			return leftStr + rightStr, nil
-		case token.BangEqual: //!=
-			return leftVal != rightVal, nil
-		case token.EqualEqual:
-			return leftVal == rightVal, nil
-		default:
-			return 0, UnknowBynaryOperator
-		}
+		return operateStrings(leftStr, rightStr, expr.Operator)
 	}
 
 	leftBool, okL := l.(bool)
 	rightBool, okR := r.(bool)
 	if okL && okR {
-		switch expr.Operator.Type {
-		case token.BangEqual:
-			return leftBool != rightBool, nil
-		case token.EqualEqual:
-			return leftBool == rightBool, nil
-		default:
-			return nil, UnknowBynaryOperator
-		}
+		return operateBooleans(leftBool, rightBool, expr.Operator)
 	}
 
 	leftStr, okL = l.(string)
 	rightNum, okR := r.(float64)
-	if okL && okR {
-		switch expr.Operator.Type {
-		case token.Plus:
-			return fmt.Sprintf("%v %v", leftStr, rightNum), nil
-		default:
-			return nil, UnknowBynaryOperator
-		}
+	if okL && okR && expr.Operator.Type == token.Plus {
+		return concatenateStrAndNum(leftStr, rightNum, false), nil
 	}
 
 	leftNum, okL := l.(float64)
 	rightStr, okR = r.(string)
-	if okL && okR {
-		switch expr.Operator.Type {
-		case token.Plus:
-			return fmt.Sprintf("%v %v", leftNum, rightStr), nil
-		default:
-			return nil, UnknowBynaryOperator
-		}
+	if okL && okR && expr.Operator.Type == token.Plus {
+		return concatenateStrAndNum(rightStr, leftNum, true), nil
 	}
 
 	return nil, UnknowBynaryOperation
 }
 
-// this is a helper
-// ojo, la truthyness so podria definir de forma diferente.
-func isTruthy(val any) bool {
-	if val == nil {
-		return false
-	}
-	b, ok := val.(bool)
-	if ok {
-		return b
-	}
-	return true
-}
