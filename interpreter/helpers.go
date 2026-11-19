@@ -3,6 +3,7 @@ package interpreter
 import (
 	"fmt"
 	"github.com/ADN2212/nini/token"
+	"math"
 )
 
 func operateNumbers(a, b float64, operator *token.Token) (any, error) {
@@ -26,6 +27,8 @@ func operateNumbers(a, b float64, operator *token.Token) (any, error) {
 			// debo parsear el resultado para que se puedan hacer operaciones conjuntas
 			return float64(aInt % bInt), nil
 		}
+	case token.Hat:
+		return math.Pow(a, b), nil
 	//comparaciones:
 	case token.Greater:
 		return a > b, nil

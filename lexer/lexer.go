@@ -66,6 +66,8 @@ func (lexer *lexer) scanNextToken() {
 		lexer.addToken(token.Star, nil)
 	case '%':
 		lexer.addToken(token.Mod, nil)
+	case '^':
+		lexer.addToken(token.Hat, nil)
 
 	//en nini usare "no" para hacer negacioens
 	case '!':

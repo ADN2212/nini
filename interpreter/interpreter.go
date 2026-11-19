@@ -151,7 +151,7 @@ func computeExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 		//Estas 4 caen dentro de la cantegoria de operaciones binarias
 		case ast.LogicalExpr:
 			return computeLogicalExpr(*expr, env)
-		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr:
+		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr, ast.ExponetialExpr:
 			return computeBynaryExpr(expr, env)
 		case ast.UnaryExpr:
 			return computeUnaryExpr(expr, env)
@@ -282,4 +282,3 @@ func computeBynaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
 
 	return nil, UnknowBynaryOperation
 }
-

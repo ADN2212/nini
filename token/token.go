@@ -24,7 +24,8 @@ const (
 	Slash                 // /
 	Star                  // *
 	Mod                   //%
-
+	Hat                   //^
+	
 	// Logicos
 	Not          // no
 	BangEqual    // !=

@@ -192,15 +192,32 @@ func (p *parser) term() ast.Expr {
 }
 
 func (p *parser) factor() ast.Expr {
-	expr := p.unary()
+	expr := p.exponential()
 	newExpr := ast.Expr{}
 	for p.match(token.Slash, token.Star, token.Mod) {
 		operator := p.previous()
-		right := p.unary()
+		right := p.exponential()
 		newExpr = ast.NewBynaryExpr(operator, &expr, &right, ast.FactorExpr)
 	}
 	if newExpr.IsEmpty() {
 		return expr
+	}
+	return newExpr
+}
+
+// esto es para expresiones de la forma a^b, donde a y b son expresiones
+func (p *parser) exponential() ast.Expr {
+	base := p.unary()
+	newExpr := ast.Expr{}
+	for p.match(token.Hat) {
+		hat := p.previous() //este ha de ser el hat ^
+		//esto hace que la operacion sea asociativa hacia la derecha
+		//osea que 2^2^2 = 2^(2^2)
+		exponet := p.exponential()
+		newExpr = ast.NewBynaryExpr(hat, &base, &exponet, ast.ExponetialExpr)
+	}
+	if newExpr.IsEmpty() {
+		return base
 	}
 	return newExpr
 }

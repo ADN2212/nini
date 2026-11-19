@@ -15,6 +15,7 @@ const (
 	ComparisonExpr //
 	TermExpr       //
 	FactorExpr     //
+	ExponetialExpr
 	UnaryExpr      //
 	PrimaryExpr    //estos son los literals
 	GroupExpr      //
