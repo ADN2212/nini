@@ -1,13 +1,13 @@
-sea i = 1;
-sea sumaPares = 0;
+sea sumaDeCubos = 0;
+sea sumaAlCuadrado =0;
+sea i = 0;
 
-mientras (i <= 100) {
-    si (i % 2 == 0) {
-        sumaPares = sumaPares + i;
-    } sino {
-        ver "impar";
-    }
+mientras(i <= 10) {
+    sumaDeCubos = sumaDeCubos + i^3;
+    sumaAlCuadrado = sumaAlCuadrado + i;
     i = i + 1;
 }
 
-ver sumaPares + " XD";
+sumaAlCuadrado = sumaAlCuadrado^2;
+
+ver sumaDeCubos == sumaAlCuadrado;
