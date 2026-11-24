@@ -16,9 +16,9 @@ const (
 	TermExpr       //
 	FactorExpr     //
 	ExponetialExpr
-	UnaryExpr      //
-	PrimaryExpr    //estos son los literals
-	GroupExpr      //
+	UnaryExpr   //
+	PrimaryExpr //estos son los literals
+	GroupExpr   //
 	VarExpr
 )
 
@@ -76,5 +76,12 @@ func NewVarAssingmentExpr(name *token.Token, rightExp *Expr) Expr {
 		Name:  name,
 		Type:  VarAssingmentExpr,
 		Right: rightExp,
+	}
+}
+
+func NewPrymaryExpr(val any) Expr {
+	return Expr{
+		Type: PrimaryExpr,
+		Val:  val,
 	}
 }

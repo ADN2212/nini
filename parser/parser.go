@@ -232,25 +232,20 @@ func (p *parser) unary() ast.Expr {
 }
 
 func (p *parser) primary() ast.Expr {
-	expr := ast.Expr{Type: ast.PrimaryExpr}
 	if p.match(token.False) {
-		expr.Val = false
-		return expr
+		return ast.NewPrymaryExpr(false)
 	}
 
 	if p.match(token.True) {
-		expr.Val = true
-		return expr
+		return ast.NewPrymaryExpr(true)
 	}
 
 	if p.match(token.Nil) {
-		expr.Val = nil
-		return expr
+		return ast.NewPrymaryExpr(nil)
 	}
 
 	if p.match(token.Number, token.String) {
-		expr.Val = p.previous().Literal
-		return expr
+		return ast.NewPrymaryExpr(p.previous().Literal)
 	}
 
 	if p.match(token.Identifier) {
@@ -260,13 +255,16 @@ func (p *parser) primary() ast.Expr {
 
 	if p.match(token.LeftParen) {
 		innerExpr := p.expression()
-		expr = ast.NewGroupExpr(&innerExpr)
+		expr := ast.NewGroupExpr(&innerExpr)
 		p.consume(token.RightParen, "se esepra ')' al final de la exprecion grupal")
 		return expr
 	}
 
 	p.err = UnknowPrymaryTypeErr
-	return expr
+	//como antes de esto se asigno el error es valido retornar una Expression vacia.
+	//however, si esto pasara del parser al llegar al interpreter tambien se romperia
+	//ya que no reconoceria el tipo de expression.
+	return ast.Expr{}
 }
 
 func (p *parser) consume(t token.TokenType, message string) token.Token {
