@@ -132,7 +132,7 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 		//Estas 4 caen dentro de la cantegoria de operaciones binarias
 		case ast.LogicalExpr:
 			fmt.Println("Computing logical expression")
-			return i.computeLogicalExpr(*expr)
+			return i.computeLogicalExpr(expr)
 		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr, ast.ExponetialExpr:
 			fmt.Println("In bynary expression")
 			return i.computeBynaryExpr(expr)
@@ -213,7 +213,7 @@ func (i *interpreter) computeVarAssingExpr(expr *ast.Expr) any {
 // 	return val, nil
 // }
 
-func (i *interpreter) computeLogicalExpr(expr ast.Expr) any {
+func (i *interpreter) computeLogicalExpr(expr *ast.Expr) any {
 	l := i.computeExpr(expr.Left)
 
 	if i.err != nil {
