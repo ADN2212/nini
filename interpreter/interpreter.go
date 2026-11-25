@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/ADN2212/nini/ast"
 	"github.com/ADN2212/nini/enviroment"
-	//"github.com/ADN2212/nini/token"
+	"github.com/ADN2212/nini/token"
 )
 
 type interpreter struct {
@@ -124,16 +124,17 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 	if expr != nil {
 		switch expr.Type {
 		case ast.PrimaryExpr:
-			fmt.Println("In primary expression")
+			//fmt.Println("In primary expression")
 			return expr.Val
 		case ast.VarAssingmentExpr:
-			fmt.Println("In var assigment expresssion")
+			//fmt.Println("In var assigment expresssion")
 			return i.computeVarAssingExpr(expr)
 		//Estas 4 caen dentro de la cantegoria de operaciones binarias
 		// case ast.LogicalExpr:
 		// 	return computeLogicalExpr(*expr, env)
-		// case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr, ast.ExponetialExpr:
-		// 	return computeBynaryExpr(expr, env)
+		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr, ast.ExponetialExpr:
+			fmt.Println("In bynary expression")
+			return i.computeBynaryExpr(expr)
 		// case ast.UnaryExpr:
 		// 	return computeUnaryExpr(expr, env)
 
@@ -274,51 +275,72 @@ func (i *interpreter) computeVarExpr(expr *ast.Expr) any {
 // 	}
 // }
 
-// func computeBynaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
+func (i *interpreter) computeBynaryExpr(expr *ast.Expr) any {
 
-// 	l, err := computeExpr(expr.Left, env)
-// 	if err != nil {
-// 		return 0, err
-// 	}
-// 	r, err := computeExpr(expr.Right, env)
-// 	if err != nil {
-// 		return 0, err
-// 	}
+	l := i.computeExpr(expr.Left)
+	//igual estos early returns seran utiles para evitar llegar operaciones con esados invalidos
+	//does it make sence??
+	if i.err != nil {
+		return nil
+	}
+	r := i.computeExpr(expr.Right)
+	if i.err != nil {
+		return nil
+	}
 
-// 	leftVal, okL := l.(float64)
-// 	rightVal, okR := r.(float64)
+	fmt.Printf("operando %v %v %v \n", l, expr.Operator.Lexeme, r)
 
-// 	//Ojo: todo lo que esta dentro de los if pueden ser funciones helpers para minimizar la logitud de computeBynaryExpr.
-// 	if okL && okR {
-// 		return operateNumbers(leftVal, rightVal, expr.Operator)
-// 	}
+	leftVal, okL := l.(float64)
+	rightVal, okR := r.(float64)
 
-// 	leftStr, okL := l.(string)
-// 	rightStr, okR := r.(string)
-// 	if okL && okR {
-// 		return operateStrings(leftStr, rightStr, expr.Operator)
-// 	}
+	//Ojo: todo lo que esta dentro de los if pueden ser funciones helpers para minimizar la logitud de computeBynaryExpr.
+	if okL && okR {
+		val, err := operateNumbers(leftVal, rightVal, expr.Operator)
+		//este patron se va a repetir
+		if err != nil {
+			i.err = err
+			return nil
+		}
+		return val
+	}
 
-// 	leftBool, okL := l.(bool)
-// 	rightBool, okR := r.(bool)
-// 	if okL && okR {
-// 		return operateBooleans(leftBool, rightBool, expr.Operator)
-// 	}
+	leftStr, okL := l.(string)
+	rightStr, okR := r.(string)
+	if okL && okR {
+		val, err := operateStrings(leftStr, rightStr, expr.Operator)
+		if err != nil {
+			i.err = err
+			return nil
+		}
+		return val
+	}
 
-// 	leftStr, okL = l.(string)
-// 	rightNum, okR := r.(float64)
-// 	if okL && okR && expr.Operator.Type == token.Plus {
-// 		return concatenateStrAndNum(leftStr, rightNum, false), nil
-// 	}
+	leftBool, okL := l.(bool)
+	rightBool, okR := r.(bool)
+	if okL && okR {
+		val, err := operateBooleans(leftBool, rightBool, expr.Operator)
+		if err != nil {
+			i.err = err
+			return nil
+		}
+		return val
+	}
 
-// 	leftNum, okL := l.(float64)
-// 	rightStr, okR = r.(string)
-// 	if okL && okR && expr.Operator.Type == token.Plus {
-// 		return concatenateStrAndNum(rightStr, leftNum, true), nil
-// 	}
+	leftStr, okL = l.(string)
+	rightNum, okR := r.(float64)
+	if okL && okR && expr.Operator.Type == token.Plus {
+		return concatenateStrAndNum(leftStr, rightNum, false)
+	}
 
-// 	return nil, UnknowBynaryOperation
-// }
+	leftNum, okL := l.(float64)
+	rightStr, okR = r.(string)
+	if okL && okR && expr.Operator.Type == token.Plus {
+		return concatenateStrAndNum(rightStr, leftNum, true)
+	}
+
+	i.err = UnknowBynaryOperation
+	return nil
+}
 
 // esto es para fines de representacion, osea, lo que el user del lenguage ve.
 var goToNiniRprMap map[any]string = map[any]string{
