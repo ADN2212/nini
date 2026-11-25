@@ -117,10 +117,6 @@ func (i *interpreter) declareVar(stmt *ast.Stmt) {
 }
 
 func (i *interpreter) computeExpr(expr *ast.Expr) any {
-
-	//esto puede ser otro metodo
-	//exprType := i.getCurrentStmt().Expr.Type
-
 	if expr != nil {
 		switch expr.Type {
 		case ast.PrimaryExpr:
@@ -131,16 +127,16 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 			return i.computeVarAssingExpr(expr)
 		//Estas 4 caen dentro de la cantegoria de operaciones binarias
 		case ast.LogicalExpr:
-			fmt.Println("Computing logical expression")
+			//fmt.Println("Computing logical expression")
 			return i.computeLogicalExpr(expr)
 		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr, ast.ExponetialExpr:
-			fmt.Println("In bynary expression")
+			//fmt.Println("In bynary expression")
 			return i.computeBynaryExpr(expr)
 		case ast.UnaryExpr:
-			fmt.Println("In unary expr")
+			//fmt.Println("In unary expr")
 			return i.computeUnaryExpr(expr)
-		// case ast.GroupExpr:
-		// 	return computeExpr(expr.Right, env)
+		case ast.GroupExpr:
+			return i.computeExpr(expr.Right)
 		case ast.VarExpr:
 			return i.computeVarExpr(expr)
 		default:
