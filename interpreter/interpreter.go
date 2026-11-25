@@ -22,9 +22,9 @@ func NewInterpreter(stmts []ast.Stmt, env *enviroment.Env) interpreter {
 	}
 }
 
-func (i *interpreter) getCurrentStmtType() ast.StmtType {
-	return i.stmts[i.current].Type
-}
+// func (i *interpreter) getCurrentStmtType() ast.StmtType {
+// 	return i.stmts[i.current].Type
+// }
 
 func (i *interpreter) getCurrentStmt() ast.Stmt {
 	return i.stmts[i.current] //esto puede paniquear
@@ -45,9 +45,6 @@ func (i *interpreter) Interpret() (any, error) {
 		if i.err != nil {
 			return nil, i.err
 		}
-		// if val != nil {
-		// 	fmt.Println(val)
-		// }
 	}
 	return nil, nil
 }
@@ -57,8 +54,10 @@ func (i *interpreter) execute() {
 	stmt := i.getCurrentStmt()
 	switch stmt.Type {
 	case ast.VarDeclarationStmt:
+		fmt.Println("In var declaration statement")
 		i.declareVar(&stmt)
 	case ast.PrintStmt:
+		fmt.Println("In print statement")
 		i.printExpr(stmt.Expr)
 		// err := printExpr(stmt.Expr, env)
 		// if err != nil {
@@ -80,25 +79,22 @@ func (i *interpreter) execute() {
 		// 	return nil, err
 		// }
 	case ast.ExprStmt:
-		//val, err := computeExpr(stmt.Expr, env)
-		// if err != nil {
-		// 	return nil, err
-		// }
-		// v, ok := goToNiniRprMap[val]
-		// if ok {
-		// 	val = v
-		// }
+		fmt.Println("In expression statement")
+		val := i.computeExpr(stmt.Expr)
+		v, ok := goToNiniRprMap[val]
+		if ok {
+			val = v
+		}
+		fmt.Printf("expression returned: %v \n", val)
 	default:
 		i.err = UnknownStmtTypeErr
 	}
 
 	i.current++ //iterar al siguiente statement
-	//return nil
 }
 
 func (i *interpreter) printExpr(expr *ast.Expr) {
 	val := i.computeExpr(expr)
-	//fmt.Println(val)
 	if i.err == nil {
 		v, ok := goToNiniRprMap[val]
 		if ok {
@@ -106,7 +102,6 @@ func (i *interpreter) printExpr(expr *ast.Expr) {
 		}
 		fmt.Printf("mira => %v \n", val)
 	}
-	//return nil
 }
 
 func (i *interpreter) declareVar(stmt *ast.Stmt) {
@@ -131,9 +126,9 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 		case ast.PrimaryExpr:
 			fmt.Println("In primary expression")
 			return expr.Val
-		// case ast.VarAssingmentExpr:
-		// 	fmt.Println("In var assigment")
-		// 	return i.computeVarAssingExpr(expr)
+		case ast.VarAssingmentExpr:
+			fmt.Println("In var assigment expresssion")
+			return i.computeVarAssingExpr(expr)
 		//Estas 4 caen dentro de la cantegoria de operaciones binarias
 		// case ast.LogicalExpr:
 		// 	return computeLogicalExpr(*expr, env)
@@ -141,7 +136,7 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 		// 	return computeBynaryExpr(expr, env)
 		// case ast.UnaryExpr:
 		// 	return computeUnaryExpr(expr, env)
-		
+
 		// case ast.GroupExpr:
 		// 	return computeExpr(expr.Right, env)
 		case ast.VarExpr:
@@ -158,12 +153,12 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 }
 
 func (i *interpreter) computeVarAssingExpr(expr *ast.Expr) any {
-	//expr := i.getCurrentStmt().Expr
 	val := i.computeExpr(expr.Right) //primero hay que calcular el valor de la expresion que esta a la derecha
 	err := i.env.Assing(*expr.Name, val)
 
 	if err != nil {
 		i.err = err
+		return nil
 	}
 	//aqui estoy haciendo que el hecho de asignar una expresion retorne el valor asignado
 	//el que esto se haga o no va a depender del paradigma dominante del lenguage
