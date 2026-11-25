@@ -74,12 +74,18 @@ func run(src string, env *enviroment.Env) error {
 		return err
 	}
 
-	res, err := interpreter.Interpret(stmts, env)
+	//fmt.Println(stmts)
+
+	inter := interpreter.NewInterpreter(stmts, env)
+
+	_, err = inter.Interpret()
 	if err != nil {
 		return err
 	}
-	if res != nil {
-		fmt.Println(res)
-	}
+
+	// if res != nil {
+	// 	fmt.Println(res)
+	// }
+
 	return nil
 }
