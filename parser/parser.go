@@ -2,6 +2,8 @@ package parser
 
 import (
 	"errors"
+	"fmt"
+
 	"github.com/ADN2212/nini/ast"
 	"github.com/ADN2212/nini/token"
 )
@@ -181,6 +183,7 @@ func (p *parser) term() ast.Expr {
 	expr := p.factor()
 	newExpr := ast.Expr{}
 	for p.match(token.Minus, token.Plus) {
+		fmt.Println("adding term")
 		operator := p.previous()
 		r := p.factor()
 		newExpr = ast.NewBynaryExpr(operator, &expr, &r, ast.TermExpr)
@@ -195,6 +198,7 @@ func (p *parser) factor() ast.Expr {
 	expr := p.exponential()
 	newExpr := ast.Expr{}
 	for p.match(token.Slash, token.Star, token.Mod) {
+		fmt.Println("adding factor")
 		operator := p.previous()
 		right := p.exponential()
 		newExpr = ast.NewBynaryExpr(operator, &expr, &right, ast.FactorExpr)

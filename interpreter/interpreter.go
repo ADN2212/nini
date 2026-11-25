@@ -135,8 +135,10 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr, ast.ExponetialExpr:
 			fmt.Println("In bynary expression")
 			return i.computeBynaryExpr(expr)
-		// case ast.UnaryExpr:
-		// 	return computeUnaryExpr(expr, env)
+		case ast.UnaryExpr:
+			fmt.Println("In unary expr")
+			//return computeUnaryExpr(expr, env)
+			return nil
 
 		// case ast.GroupExpr:
 		// 	return computeExpr(expr.Right, env)
