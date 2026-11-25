@@ -138,8 +138,7 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 			return i.computeBynaryExpr(expr)
 		case ast.UnaryExpr:
 			fmt.Println("In unary expr")
-			//return computeUnaryExpr(expr, env)
-			return nil
+			return i.computeUnaryExpr(expr)
 		// case ast.GroupExpr:
 		// 	return computeExpr(expr.Right, env)
 		case ast.VarExpr:
@@ -261,24 +260,26 @@ func (i *interpreter) computeVarExpr(expr *ast.Expr) any {
 	return val
 }
 
-// func computeUnaryExpr(expr *ast.Expr, env *enviroment.Env) (any, error) {
-// 	r, err := computeExpr(expr.Right, env)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	switch expr.Operator.Type {
-// 	case token.Minus:
-// 		num, ok := r.(float64)
-// 		if !ok {
-// 			return nil, ShouldBeNumberErr
-// 		}
-// 		return -num, nil
-// 	case token.Not:
-// 		return !isTruthy(r), nil
-// 	default:
-// 		return nil, UnknowUnaryOperator
-// 	}
-// }
+func (i *interpreter) computeUnaryExpr(expr *ast.Expr) any {
+	r := i.computeExpr(expr.Right)
+	if i.err != nil {
+		return nil
+	}
+	switch expr.Operator.Type {
+	case token.Minus:
+		num, ok := r.(float64)
+		if !ok {
+			i.err = ShouldBeNumberErr
+			return nil
+		}
+		return -num
+	case token.Not:
+		return !isTruthy(r)
+	default:
+		i.err = UnknowUnaryOperator
+		return nil
+	}
+}
 
 func (i *interpreter) computeBynaryExpr(expr *ast.Expr) any {
 
