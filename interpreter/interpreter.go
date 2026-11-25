@@ -130,8 +130,9 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 			//fmt.Println("In var assigment expresssion")
 			return i.computeVarAssingExpr(expr)
 		//Estas 4 caen dentro de la cantegoria de operaciones binarias
-		// case ast.LogicalExpr:
-		// 	return computeLogicalExpr(*expr, env)
+		case ast.LogicalExpr:
+			fmt.Println("Computing logical expression")
+			return i.computeLogicalExpr(*expr)
 		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr, ast.ExponetialExpr:
 			fmt.Println("In bynary expression")
 			return i.computeBynaryExpr(expr)
@@ -139,7 +140,6 @@ func (i *interpreter) computeExpr(expr *ast.Expr) any {
 			fmt.Println("In unary expr")
 			//return computeUnaryExpr(expr, env)
 			return nil
-
 		// case ast.GroupExpr:
 		// 	return computeExpr(expr.Right, env)
 		case ast.VarExpr:
@@ -214,40 +214,43 @@ func (i *interpreter) computeVarAssingExpr(expr *ast.Expr) any {
 // 	return val, nil
 // }
 
-// func computeLogicalExpr(expr ast.Expr, env *enviroment.Env) (any, error) {
-// 	l, err := computeExpr(expr.Left, env)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	leftTrutyVal := isTruthy(l)
-// 	switch expr.Operator.Type {
-// 	//Aqui estoy implementatand short circuiting:
-// 	//Para el operador o; la expresion de la ezquierda es true retornamos true si evaluar la expr de la derecha
-// 	case token.Or:
-// 		if leftTrutyVal {
-// 			//fmt.Println("short cicuiting OR expression")
-// 			return true, nil
-// 		}
-// 		r, err := computeExpr(expr.Right, env)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		return isTruthy(r), nil
-// 	//para el operador y; si la expresion de la izquerda es false, retornamos false sin evaluar la expression de la derecha.
-// 	case token.And:
-// 		if !leftTrutyVal {
-// 			//fmt.Println("short cicuiting AND expression")
-// 			return false, nil
-// 		}
-// 		r, err := computeExpr(expr.Right, env)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		return isTruthy(r), nil
-// 	default:
-// 		return nil, InvalidadLogicalOperator
-// 	}
-// }
+func (i *interpreter) computeLogicalExpr(expr ast.Expr) any {
+	l := i.computeExpr(expr.Left)
+
+	if i.err != nil {
+		return nil
+	}
+
+	leftTrutyVal := isTruthy(l)
+	switch expr.Operator.Type {
+	//Aqui estoy implementatand short circuiting:
+	//Para el operador o; la expresion de la ezquierda es true retornamos true si evaluar la expr de la derecha
+	case token.Or:
+		if leftTrutyVal {
+			//fmt.Println("short cicuiting OR expression")
+			return true
+		}
+		r := i.computeExpr(expr.Right)
+		if i.err != nil {
+			return nil
+		}
+		return isTruthy(r)
+	//para el operador y; si la expresion de la izquerda es false, retornamos false sin evaluar la expression de la derecha.
+	case token.And:
+		if !leftTrutyVal {
+			//fmt.Println("short cicuiting AND expression")
+			return false
+		}
+		r := i.computeExpr(expr.Right)
+		if i.err != nil {
+			return nil
+		}
+		return isTruthy(r)
+	default:
+		i.err = InvalidadLogicalOperator
+		return nil
+	}
+}
 
 func (i *interpreter) computeVarExpr(expr *ast.Expr) any {
 	val, err := i.env.Get(*expr.Name)
