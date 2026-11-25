@@ -12,6 +12,7 @@ import (
 var goToNiniRprMap map[any]string = map[any]string{
 	false: "falso",
 	true:  "verdadero",
+	nil: "nulo",
 }
 
 func execute(stmt ast.Stmt, env *enviroment.Env) (any, error) {
