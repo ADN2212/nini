@@ -22,10 +22,6 @@ func NewInterpreter(stmts []ast.Stmt, env *enviroment.Env) interpreter {
 	}
 }
 
-// func (i *interpreter) getCurrentStmtType() ast.StmtType {
-// 	return i.stmts[i.current].Type
-// }
-
 func (i *interpreter) getCurrentStmt() ast.Stmt {
 	return i.stmts[i.current] //esto puede paniquear
 }
@@ -52,7 +48,6 @@ func (i *interpreter) Interpret() (any, error) {
 
 func (i *interpreter) execute(s *ast.Stmt) {
 	//fmt.Printf("En env '%v' con valores %v \n", currentEnv.Name, currentEnv.Values)
-	
 	//esto es solo un hack asqueroso, plis fix this.
 	var stmt ast.Stmt
 	if s == nil {
@@ -63,36 +58,20 @@ func (i *interpreter) execute(s *ast.Stmt) {
 	
 	switch stmt.Type {
 	case ast.VarDeclarationStmt:
-		//fmt.Println("In var declaration statement")
 		i.declareVar(&stmt)
 	case ast.PrintStmt:
-		//fmt.Println("In print statement")
 		i.printExpr(stmt.Expr)
 	case ast.IfStmt:
-		// err := computeIfStmt(stmt, env)
-		// if err != nil {
-		// 	return nil, err
-		// }
 		i.executeIfStmt(&stmt)
 	case ast.WhileStmt:
-		// err := computeWhileStmt(stmt, env)
-		// if err != nil {
-		// 	return nil, err
-		// }
+		
 	case ast.BlockStmt:
 		i.executeBLockStmt(&stmt)
 	case ast.ExprStmt:
-		//fmt.Println("In expression statement")
-		val := i.computeExpr(stmt.Expr)
-		v, ok := goToNiniRprMap[val]
-		if ok {
-			val = v
-		}
-		//fmt.Printf("expression returned: %v \n", val)
+		i.computeExpr(stmt.Expr)
 	default:
 		i.err = UnknownStmtTypeErr
 	}
-
 	i.current++ //iterar al siguiente statement
 }
 
@@ -111,44 +90,33 @@ func (i *interpreter) declareVar(stmt *ast.Stmt) {
 	val := i.computeExpr(stmt.Expr)
 	err := i.env.Define(stmt.Name.Lexeme, val)
 	if err != nil {
-		//fmt.Println("Aqui ??")
 		i.err = err
 	}
-	//fmt.Println(i.env)
-	//fmt.Printf("variable '%v' declarada con valor '%v' \n", stmt.Name.Lexeme, val)
-	//return nil
 }
 
 func (i *interpreter) computeExpr(expr *ast.Expr) any {
 	if expr != nil {
 		switch expr.Type {
 		case ast.PrimaryExpr:
-			//fmt.Println("In primary expression")
 			return expr.Val
 		case ast.VarAssingmentExpr:
-			//fmt.Println("In var assigment expresssion")
 			return i.computeVarAssingExpr(expr)
 		//Estas 4 caen dentro de la cantegoria de operaciones binarias
 		case ast.LogicalExpr:
-			//fmt.Println("Computing logical expression")
 			return i.computeLogicalExpr(expr)
 		case ast.EqualityExpr, ast.ComparisonExpr, ast.TermExpr, ast.FactorExpr, ast.ExponetialExpr:
-			//fmt.Println("In bynary expression")
 			return i.computeBynaryExpr(expr)
 		case ast.UnaryExpr:
-			//fmt.Println("In unary expr")
 			return i.computeUnaryExpr(expr)
 		case ast.GroupExpr:
 			return i.computeExpr(expr.Right)
 		case ast.VarExpr:
 			return i.computeVarExpr(expr)
 		default:
-			//return nil, UnknowExprTypeErr
 			i.err = UnknowExprTypeErr
 			return nil
 		}
 	}
-
 	i.err = NilExprErr
 	return nil
 }
@@ -228,7 +196,6 @@ func (i *interpreter) computeLogicalExpr(expr *ast.Expr) any {
 	//Para el operador o; la expresion de la ezquierda es true retornamos true si evaluar la expr de la derecha
 	case token.Or:
 		if leftTrutyVal {
-			//fmt.Println("short cicuiting OR expression")
 			return true
 		}
 		r := i.computeExpr(expr.Right)
@@ -239,7 +206,6 @@ func (i *interpreter) computeLogicalExpr(expr *ast.Expr) any {
 	//para el operador y; si la expresion de la izquerda es false, retornamos false sin evaluar la expression de la derecha.
 	case token.And:
 		if !leftTrutyVal {
-			//fmt.Println("short cicuiting AND expression")
 			return false
 		}
 		r := i.computeExpr(expr.Right)
