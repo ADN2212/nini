@@ -41,7 +41,7 @@ func (i *interpreter) Interpret() (any, error) {
 	}
 
 	for i.hasNext() {
-		i.execute()
+		i.execute(nil)
 		if i.err != nil {
 			return nil, i.err
 		}
@@ -50,9 +50,17 @@ func (i *interpreter) Interpret() (any, error) {
 	return nil, nil
 }
 
-func (i *interpreter) execute() {
+func (i *interpreter) execute(s *ast.Stmt) {
 	//fmt.Printf("En env '%v' con valores %v \n", currentEnv.Name, currentEnv.Values)
-	stmt := i.getCurrentStmt()
+	
+	//esto es solo un hack asqueroso, plis fix this.
+	var stmt ast.Stmt
+	if s == nil {
+		stmt = i.getCurrentStmt()
+	} else {
+		stmt = *s
+	}
+	
 	switch stmt.Type {
 	case ast.VarDeclarationStmt:
 		//fmt.Println("In var declaration statement")
@@ -65,6 +73,7 @@ func (i *interpreter) execute() {
 		// if err != nil {
 		// 	return nil, err
 		// }
+		i.executeIfStmt(&stmt)
 	case ast.WhileStmt:
 		// err := computeWhileStmt(stmt, env)
 		// if err != nil {
@@ -180,19 +189,19 @@ func (i *interpreter) computeVarAssingExpr(expr *ast.Expr) any {
 // 	return nil
 // }
 
-// func computeIfStmt(stmt ast.Stmt, env *enviroment.Env) error {
-// 	condition, err := computeExpr(stmt.Condition, env)
-// 	if err != nil {
-// 		return err
-// 	}
-// 	if isTruthy(condition) {
-// 		_, err = execute(*stmt.ThenBranch, env)
-// 	}
-// 	if stmt.ElseBranch != nil {
-// 		_, err = execute(*stmt.ElseBranch, env)
-// 	}
-// 	return err
-// }
+func (i *interpreter) executeIfStmt(stmt *ast.Stmt) {
+	condition := i.computeExpr(stmt.Condition)
+	if i.err != nil {
+		return //esto es solo para detener la ejecucion en caso de que pase un error
+	}
+	if isTruthy(condition) {
+		i.execute(stmt.ThenBranch)
+		return//sin este return se ejecutaria la esle branch en caso de existir.
+	}
+	if stmt.ElseBranch != nil {
+		i.execute(stmt.ElseBranch)
+	}
+}
 
 func (i *interpreter) executeBLockStmt(stmt *ast.Stmt) (any, error) {
 	newEnv := enviroment.NewEnv("sub env", i.env)
