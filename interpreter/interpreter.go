@@ -46,6 +46,7 @@ func (i *interpreter) Interpret() (any, error) {
 			return nil, i.err
 		}
 	}
+
 	return nil, nil
 }
 
@@ -54,15 +55,11 @@ func (i *interpreter) execute() {
 	stmt := i.getCurrentStmt()
 	switch stmt.Type {
 	case ast.VarDeclarationStmt:
-		fmt.Println("In var declaration statement")
+		//fmt.Println("In var declaration statement")
 		i.declareVar(&stmt)
 	case ast.PrintStmt:
-		fmt.Println("In print statement")
+		//fmt.Println("In print statement")
 		i.printExpr(stmt.Expr)
-		// err := printExpr(stmt.Expr, env)
-		// if err != nil {
-		// 	return nil, err
-		// }
 	case ast.IfStmt:
 		// err := computeIfStmt(stmt, env)
 		// if err != nil {
@@ -74,18 +71,15 @@ func (i *interpreter) execute() {
 		// 	return nil, err
 		// }
 	case ast.BlockStmt:
-		// _, err := computeBLockStmt(stmt, env)
-		// if err != nil {
-		// 	return nil, err
-		// }
+		i.executeBLockStmt(&stmt)
 	case ast.ExprStmt:
-		fmt.Println("In expression statement")
+		//fmt.Println("In expression statement")
 		val := i.computeExpr(stmt.Expr)
 		v, ok := goToNiniRprMap[val]
 		if ok {
 			val = v
 		}
-		fmt.Printf("expression returned: %v \n", val)
+		//fmt.Printf("expression returned: %v \n", val)
 	default:
 		i.err = UnknownStmtTypeErr
 	}
@@ -112,7 +106,7 @@ func (i *interpreter) declareVar(stmt *ast.Stmt) {
 		i.err = err
 	}
 	//fmt.Println(i.env)
-	fmt.Printf("variable '%v' declarada con valor '%v' \n", stmt.Name.Lexeme, val)
+	//fmt.Printf("variable '%v' declarada con valor '%v' \n", stmt.Name.Lexeme, val)
 	//return nil
 }
 
@@ -200,14 +194,17 @@ func (i *interpreter) computeVarAssingExpr(expr *ast.Expr) any {
 // 	return err
 // }
 
-// func computeBLockStmt(stmt ast.Stmt, env *enviroment.Env) (any, error) {
-// 	newEnv := enviroment.NewEnv("sub env", env)
-// 	val, err := Interpret(stmt.Statements, &newEnv)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	return val, nil
-// }
+func (i *interpreter) executeBLockStmt(stmt *ast.Stmt) (any, error) {
+	newEnv := enviroment.NewEnv("sub env", i.env)
+	//como newEnv tiene como padre el env del interprete que llama a este metodo,
+	//aunque sea otra instancai podra acceder a las var del interprete anterior.
+	newInterpreter := NewInterpreter(stmt.Statements, &newEnv)
+	val, err := newInterpreter.Interpret()
+	if err != nil {
+		return nil, err
+	}
+	return val, nil//esto tiene que retornar algo ???
+}
 
 func (i *interpreter) computeLogicalExpr(expr *ast.Expr) any {
 	l := i.computeExpr(expr.Left)
@@ -290,7 +287,7 @@ func (i *interpreter) computeBynaryExpr(expr *ast.Expr) any {
 		return nil
 	}
 
-	fmt.Printf("operando %v %v %v \n", l, expr.Operator.Lexeme, r)
+	//fmt.Printf("operando %v %v %v \n", l, expr.Operator.Lexeme, r)
 
 	leftVal, okL := l.(float64)
 	rightVal, okR := r.(float64)
