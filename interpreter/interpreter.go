@@ -64,7 +64,7 @@ func (i *interpreter) execute(s *ast.Stmt) {
 	case ast.IfStmt:
 		i.executeIfStmt(&stmt)
 	case ast.WhileStmt:
-		
+		i.executeWhileStmt(&stmt)
 	case ast.BlockStmt:
 		i.executeBLockStmt(&stmt)
 	case ast.ExprStmt:
@@ -137,25 +137,25 @@ func (i *interpreter) computeVarAssingExpr(expr *ast.Expr) any {
 	return val
 }
 
-// tal vez compute no sea el prefijo mas adecuando para esta funciones sobre statements
-// func computeWhileStmt(stmt ast.Stmt, env *enviroment.Env) error {
-// 	for {
-// 		val, err := computeExpr(stmt.Condition, env)
-// 		if err != nil {
-// 			return err
-// 		}
-// 		if isTruthy(val) {
-// 			//el body de un while se puede interpretar como la then branch de un if isn't it ?
-// 			_, err := execute(*stmt.ThenBranch, env)
-// 			if err != nil {
-// 				return err
-// 			}
-// 		} else {
-// 			break
-// 		}
-// 	}
-// 	return nil
-// }
+
+//Ahora empieza a tomar sentido, los statements no retornan nada, pero la expresiones si.
+func (i *interpreter) executeWhileStmt(stmt *ast.Stmt) {
+	for {
+		val := i.computeExpr(stmt.Condition)
+		if i.err != nil {
+			return //again, just an early return so to not exucute invalid code.
+		}
+		if isTruthy(val) {
+			//el body de un while se puede interpretar como la then branch de un if isn't it ?
+			i.execute(stmt.ThenBranch)
+			if i.err != nil {
+				return 
+			}
+		} else {
+			break
+		}
+	}
+}
 
 func (i *interpreter) executeIfStmt(stmt *ast.Stmt) {
 	condition := i.computeExpr(stmt.Condition)

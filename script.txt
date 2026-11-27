@@ -1,5 +1,6 @@
-sea i = 10;
+sea i = 0;
 
-si (i > 5) {
-    ver "mayor";
+mientras(i <= 10) {
+    ver i;
+    i = i + 1;
 }
